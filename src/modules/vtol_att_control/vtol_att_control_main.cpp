@@ -468,11 +468,22 @@ VtolAttitudeControl::is_fixed_wing_requested()
 	return to_fw;
 }
 
+/*
+ * the sweep and wall-suck request are both from landing-geat switch
+ */
 bool
 VtolAttitudeControl::is_sweep_requested()
 {
 	return (_manual_control_sp.gear_switch == manual_control_setpoint_s::SWITCH_POS_ON);
 }
+
+bool
+VtolAttitudeControl::is_wallsuck_requested()
+{
+	return (_manual_control_sp.gear_switch == manual_control_setpoint_s::SWITCH_POS_ON);
+}
+
+
 
 /*
  * Abort front transition
@@ -532,14 +543,14 @@ VtolAttitudeControl::parameters_update()
 	param_get(_params_handles.fw_qc_max_roll, &l);
 	_params.fw_qc_max_roll = l;
 
-	param_get(_params_handles.vt_sweep_type, &l);
-	_params.vt_sweep_type = l;
+	param_get(_params_handles.vt_sweep_or_suck_type, &l);
+	_params.vt_sweep_or_suck_type = l;
 
 	param_get(_params_handles.front_trans_time_openloop, &_params.front_trans_time_openloop);
 
 	param_get(_params_handles.front_trans_time_min, &_params.front_trans_time_min);
 
-	param_get(_params_handles.vt_sweep_amp, &_params.vt_sweep_amp);
+	param_get(_params_handles.vt_sweep_or_suck_amp, &_params.vt_sweep_or_suck_amp);
 
 	param_get(_params_handles.vt_vz_control_kp, &_params.vt_vz_control_kp);
 

@@ -761,7 +761,7 @@ void Tailsitter::fill_actuator_outputs()
 
 		/* Used for sweep experiment's input signal */
 		if(_attc->is_sweep_requested()) {
-			switch (_params->vt_sweep_type){
+			switch (_params->vt_sweep_or_suck_type){
 			case NO_SWEEP:
 				break;
 			case PITCH_RATE:
@@ -770,7 +770,7 @@ void Tailsitter::fill_actuator_outputs()
 				sweep_signal_phase = 8.0f * 6.2831f * time_since_sweep;//sweep_min_frequency * time_since_sweep + 0.0187f * (sweep_max_frequency - sweep_min_frequency) * (overall_time / 4.0f * powf(2.7183f, (4.0f * time_since_sweep / overall_time)) - time_since_sweep);
 				// Linear Chirp
 				//sweep_signal_phase = sweep_min_frequency * time_since_sweep + 0.5f * (sweep_max_frequency - sweep_min_frequency) * (time_since_sweep * time_since_sweep / overall_time);
-				sweep_signal = (float)(_params->vt_sweep_amp) * sinf(sweep_signal_phase);
+				sweep_signal = (float)(_params->vt_sweep_or_suck_amp) * sinf(sweep_signal_phase);
 				_actuators_out_0->sweep_input = sweep_signal;
 				_actuators_out_0->control[actuator_controls_s::INDEX_PITCH] = _actuators_mc_in->control[actuator_controls_s::INDEX_PITCH] + sweep_signal;
 				break;
@@ -780,7 +780,7 @@ void Tailsitter::fill_actuator_outputs()
 				sweep_signal_phase = 8.0f * 6.2831f * time_since_sweep;//sweep_min_frequency * time_since_sweep + 0.0187f * (sweep_max_frequency - sweep_min_frequency) * (overall_time / 4.0f * powf(2.7183f, (4.0f * time_since_sweep / overall_time)) - time_since_sweep);
 				// Linear Chirp
 				// sweep_signal_phase = sweep_min_frequency  * time_since_sweep + 0.5f * (sweep_max_frequency - sweep_min_frequency) * (time_since_sweep * time_since_sweep / overall_time);
-				sweep_signal = (float)(_params->vt_sweep_amp) * sinf(sweep_signal_phase);
+				sweep_signal = (float)(_params->vt_sweep_or_suck_amp) * sinf(sweep_signal_phase);
 				_actuators_out_0->sweep_input = sweep_signal;
 				_actuators_out_0->control[actuator_controls_s::INDEX_ROLL] = _actuators_mc_in->control[actuator_controls_s::INDEX_ROLL] + sweep_signal;
 				break;
@@ -790,7 +790,7 @@ void Tailsitter::fill_actuator_outputs()
 				sweep_signal_phase = sweep_min_frequency * time_since_sweep + 0.0187f * (sweep_max_frequency - sweep_min_frequency) * (overall_time / 4.0f * powf(2.7183f, (4.0f * time_since_sweep / overall_time)) - time_since_sweep);
 				// Linear Chirp
 				// sweep_signal_phase = sweep_min_frequency  * time_since_sweep + 0.5f * (sweep_max_frequency - sweep_min_frequency) * (time_since_sweep * time_since_sweep / overall_time);
-				sweep_signal = (float)(_params->vt_sweep_amp) * sinf(sweep_signal_phase);
+				sweep_signal = (float)(_params->vt_sweep_or_suck_amp) * sinf(sweep_signal_phase);
 				_actuators_out_0->sweep_input = sweep_signal;
 				_actuators_out_0->control[actuator_controls_s::INDEX_THROTTLE] = _actuators_mc_in->control[actuator_controls_s::INDEX_THROTTLE] + sweep_signal;
 				break;
@@ -799,6 +799,8 @@ void Tailsitter::fill_actuator_outputs()
 			/* record the start time */
 			_vtol_schedule.sweep_start = hrt_absolute_time();
 		}
+
+
 		break;
 
 	case FIXED_WING:
