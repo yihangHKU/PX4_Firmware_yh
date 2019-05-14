@@ -134,6 +134,7 @@ private:
 	int	_airspeed_sub{-1};			// airspeed subscription
 	int	_fw_virtual_att_sp_sub{-1};
 	int	_land_detected_sub{-1};
+	int _pm3901_and_tof_sub{-1};
 	int	_local_pos_sp_sub{-1};			// setpoint subscription
 	int	_local_pos_sub{-1};			// sensor subscription
 	int _sensor_acc_sub{-1};
