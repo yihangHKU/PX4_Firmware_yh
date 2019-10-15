@@ -4211,7 +4211,7 @@ void Commander::estimator_check(bool *status_changed)
 
 						// if the innovation test has failed continuously, declare the nav as failed
 						if (hrt_elapsed_time(&_time_last_innov_pass) > 1_s) {
-							_nav_test_failed = true;
+					     	_nav_test_failed = true;
 							mavlink_log_emergency(&mavlink_log_pub, "CRITICAL NAVIGATION FAILURE - CHECK SENSOR CALIBRATION");
 						}
 					}
