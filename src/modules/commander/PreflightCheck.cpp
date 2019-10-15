@@ -558,7 +558,7 @@ static bool ekf2Check(orb_advert_t *mavlink_log_pub, vehicle_status_s &vehicle_s
 			mavlink_log_critical(mavlink_log_pub, "Preflight Fail: Horizontal estimate Pos Error");
 		}
 
-		success = false;
+		//success = false;
 		goto out;
 	}
 
