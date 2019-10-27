@@ -652,9 +652,9 @@ void Tailsitter::fill_actuator_outputs()
 	float time_since_sweep = 0.0f;
 	float sweep_signal_phase = 0.0f;
 	float sweep_signal = 0.0f;
-	sweep_min_frequency = (_params->vt_sweep_min_frequency) * 6.2831f;
-	sweep_max_frequency = (_params->vt_sweep_max_frequency) * 6.2831f;
-	overall_time = (_params->vt_sweep_time);
+	float sweep_min_frequency = _params->vt_sweep_minf * 6.2831f;
+	float sweep_max_frequency = _params->vt_sweep_maxf * 6.2831f;
+	float overall_time = (_params->vt_sweep_time);
 	//float time_since_trans_start = (float)(hrt_absolute_time() - _vtol_schedule.f_trans_start_t) * 1e-6f;
 
 	_actuators_out_0->timestamp = hrt_absolute_time();

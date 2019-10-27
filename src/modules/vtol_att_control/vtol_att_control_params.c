@@ -118,6 +118,33 @@ PARAM_DEFINE_INT32(VT_SWEEP_TYPE, 0);
  */
 PARAM_DEFINE_FLOAT(VT_SWEEP_AMP, 0.2f);
 
+/**
+ * Set the minimum frequency of the sweep signal
+ *
+ *
+ * @boolean
+ * @group VTOL Attitude Control
+ */
+PARAM_DEFINE_FLOAT(VT_SWEEP_MINF, 0.5f);
+
+/**
+ * Set the maximum frequency of the sweep signal
+ *
+ *
+ * @boolean
+ * @group VTOL Attitude Control
+ */
+PARAM_DEFINE_FLOAT(VT_SWEEP_MAXF, 80.0f);
+
+/**
+ * Set the duration of time of the sweep signal
+ *
+ *
+ * @boolean
+ * @group VTOL Attitude Control
+ */
+PARAM_DEFINE_FLOAT(VT_SWEEP_TIME, 150.0f);
+
 /*
 * The parameters of the vertical velocity controller
 * Kp 

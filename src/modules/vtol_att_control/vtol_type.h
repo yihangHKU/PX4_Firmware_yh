@@ -75,6 +75,9 @@ struct Params {
 	int32_t fw_motors_off;			/**< bitmask of all motors that should be off in fixed wing mode */
 	int32_t vt_sweep_type;
 	float vt_sweep_amp;
+	float vt_sweep_minf;
+	float vt_sweep_maxf;
+	float vt_sweep_time;
 	float vt_vz_control_kp;
 	float vt_vz_control_ki;
 	float vt_vz_control_kd;
@@ -117,7 +120,7 @@ enum vtol_type {
 
 // these are states that can be applied to a selection of multirotor motors.
 // e.g. if we need to shut off some motors after transitioning to fixed wing mode
-// we can individually disable them while others might still need to be enabled to produce thrust.
+
 // we can select the target motors via VT_FW_MOT_OFFID
 enum motor_state {
 	ENABLED = 0,		// motor max pwm will be set to the standard max pwm value
