@@ -670,37 +670,61 @@ void Tailsitter::fill_actuator_outputs()
 		_actuators_out_0->control[actuator_controls_s::INDEX_YAW] = _actuators_mc_in->control[actuator_controls_s::INDEX_YAW];
 		_actuators_out_0->control[actuator_controls_s::INDEX_THROTTLE] = _actuators_mc_in->control[actuator_controls_s::INDEX_THROTTLE];
 
-		/* Used for sweep experiment's input signal */
+		/* Used for sweep experiment's input signa l */
 		if(_attc->is_sweep_requested()) {
 			switch (_params->vt_sweep_type){
 			case NO_SWEEP:
 				break;
 			case PITCH_RATE:
 				time_since_sweep = (float)(hrt_absolute_time() - _vtol_schedule.sweep_start) * 1e-6f;
-				// Exponantial Chirp
-				//sweep_signal_phase = 8.0f * 6.2831f * time_since_sweep;//sweep_min_frequency * time_since_sweep + 0.0187f * (sweep_max_frequency - sweep_min_frequency) * (overall_time / 4.0f * powf(2.7183f, (4.0f * time_since_sweep / overall_time)) - time_since_sweep);
-				// Linear Chirp
-				sweep_signal_phase = sweep_min_frequency * time_since_sweep + 0.5f * (sweep_max_frequency - sweep_min_frequency) * (time_since_sweep * time_since_sweep / overall_time);
+				if(overall_time - time_since_sweep>=0.001f){
+			    	// Exponential Chirp
+			     	//sweep_min_frequency * time_since_sweep + 0.0187f * (sweep_max_frequency - sweep_min_frequency) * (overall_time / 4.0f * powf(2.7183f, (4.0f * time_since_sweep / overall_time)) - time_since_sweep);
+			        // Linear Chirp
+			     	sweep_signal_phase = sweep_min_frequency * time_since_sweep + 0.5f * (sweep_max_frequency - sweep_min_frequency) * (time_since_sweep * time_since_sweep / overall_time);
+				}
+				else{
+					// Exponential Chirp
+					//sweep_min_frequency * time_since_sweep + 0.0187f * (sweep_max_frequency - sweep_min_frequency) * (overall_time / 4.0f * powf(2.7183f, (4.0f * time_since_sweep / overall_time)) - time_since_sweep);
+				    // linear Chirp
+					sweep_signal_phase = 0.5f * (sweep_max_frequency + sweep_min_frequency) * overall_time + sweep_max_frequency * (time_since_sweep - overall_time);
+				}
 				sweep_signal = (float)(_params->vt_sweep_amp) * sinf(sweep_signal_phase);
 				_actuators_out_0->sweep_input = sweep_signal;
 				_actuators_out_0->control[actuator_controls_s::INDEX_PITCH] = _actuators_mc_in->control[actuator_controls_s::INDEX_PITCH] + sweep_signal;
 				break;
 		    case ROLL_RATE:
-		    		time_since_sweep = (float)(hrt_absolute_time() - _vtol_schedule.sweep_start) * 1e-6f;
-		    		// Exponantial Chirp
-				//sweep_signal_phase = 8.0f * 6.2831f * time_since_sweep;//sweep_min_frequency * time_since_sweep + 0.0187f * (sweep_max_frequency - sweep_min_frequency) * (overall_time / 4.0f * powf(2.7183f, (4.0f * time_since_sweep / overall_time)) - time_since_sweep);
-				// Linear Chirp
-				sweep_signal_phase = sweep_min_frequency  * time_since_sweep + 0.5f * (sweep_max_frequency - sweep_min_frequency) * (time_since_sweep * time_since_sweep / overall_time);
+		    	time_since_sweep = (float)(hrt_absolute_time() - _vtol_schedule.sweep_start) * 1e-6f;
+		    	if(overall_time - time_since_sweep>=0.001f){
+		   	    	// Exponential Chirp
+			     	//sweep_min_frequency * time_since_sweep + 0.0187f * (sweep_max_frequency - sweep_min_frequency) * (overall_time / 4.0f * powf(2.7183f, (4.0f * time_since_sweep / overall_time)) - time_since_sweep);
+				    // Linear Chirp
+			    	sweep_signal_phase = sweep_min_frequency  * time_since_sweep + 0.5f * (sweep_max_frequency - sweep_min_frequency) * (time_since_sweep * time_since_sweep / overall_time);
+				}
+				else{
+					// Exponential Chirp
+					// sweep_signal_phase = sweep_min_frequency * overall_time + 0.0187f * (sweep_max_frequency - sweep_min_frequency) * (powf(2.7183f, 4.0f)/4.0f - 1.0f) * overall_time + sweep_max_frequency * (time_since_sweep - overall_time);
+					// linear Chirp
+					sweep_signal_phase = 0.5f * (sweep_max_frequency + sweep_min_frequency) * overall_time + sweep_max_frequency * (time_since_sweep - overall_time);
+				}
 				sweep_signal = (float)(_params->vt_sweep_amp) * sinf(sweep_signal_phase);
 				_actuators_out_0->sweep_input = sweep_signal;
 				_actuators_out_0->control[actuator_controls_s::INDEX_ROLL] = _actuators_mc_in->control[actuator_controls_s::INDEX_ROLL] + sweep_signal;
 				break;
 			case THRUST:
 				time_since_sweep = (float)(hrt_absolute_time() - _vtol_schedule.sweep_start) * 1e-6f;
-		    	// Exponantial Chirp
-				sweep_signal_phase = sweep_min_frequency * time_since_sweep + 0.0187f * (sweep_max_frequency - sweep_min_frequency) * (overall_time / 4.0f * powf(2.7183f, (4.0f * time_since_sweep / overall_time)) - time_since_sweep);
-				// Linear Chirp
-				// sweep_signal_phase = sweep_min_frequency  * time_since_sweep + 0.5f * (sweep_max_frequency - sweep_min_frequency) * (time_since_sweep * time_since_sweep / overall_time);
+		    	if(overall_time - time_since_sweep>=0.001f){
+		         	// Exponential Chirp
+			    	// sweep_signal_phase = sweep_min_frequency * time_since_sweep + 0.0187f * (sweep_max_frequency - sweep_min_frequency) * (overall_time / 4.0f * powf(2.7183f, (4.0f * time_since_sweep / overall_time)) - time_since_sweep);
+			    	// Linear Chirp
+			    	sweep_signal_phase = sweep_min_frequency  * time_since_sweep + 0.5f * (sweep_max_frequency - sweep_min_frequency) * (time_since_sweep * time_since_sweep / overall_time);
+				}
+				else{
+					// Exponential Chirp
+					// sweep_signal_phase = sweep_min_frequency * overall_time + 0.0187f * (sweep_max_frequency - sweep_min_frequency) * (powf(2.7183f, 4.0f)/4.0f - 1.0f) * overall_time + sweep_max_frequency * (time_since_sweep - overall_time);
+					// linear Chirp
+					sweep_signal_phase = 0.5f * (sweep_max_frequency + sweep_min_frequency) * overall_time + sweep_max_frequency * (time_since_sweep - overall_time);
+				}
 				sweep_signal = (float)(_params->vt_sweep_amp) * sinf(sweep_signal_phase);
 				_actuators_out_0->sweep_input = sweep_signal;
 				_actuators_out_0->control[actuator_controls_s::INDEX_THROTTLE] = _actuators_mc_in->control[actuator_controls_s::INDEX_THROTTLE] + sweep_signal;
