@@ -655,8 +655,14 @@ void Tailsitter::fill_actuator_outputs()
 	float sweep_min_frequency = 20.0f * 6.2831f;
 	float sweep_max_frequency = 80.0f * 6.2831f ;
 	float overall_time = 150.0f;
+	float sweep_begin_time[] = {0.0,   6.0,    12.0,   18.0,   24.0,	30.0,	36.0,	42.0,	48.0,	54.0,	60.0,	66.0,	72.0,	78.0,	84.0,	90.0,	96.0,	102.0,	108.0,	114.0,	120.0,	126.0,	132.0,	138.0,	144.0,	150.0,	156.0,	162.0,	168.0};
+	float sweep_end_time[] =   {4.0,   10.0,   16.0,   22.0,   28.0,	34.0,	40.0,	46.0,	52.0,	58.0,	64.0,	70.0,	76.0,	82.0,	88.0,	94.0,	100.0,	106.0,	112.0,	118.0,	124.0,	130.0,	136.0,	142.0,	148.0,	154.0,	160.0,	166.0,	172.0};
+	float sweep_frequency[] =  {0.5,   0.52,   0.5408, 0.5624, 0.5849,	0.6083,	0.6327,	0.6580,	0.6843,	0.7117,	0.7401,	0.7697,	0.8005,	0.8325,	0.8658,	0.9005,	0.9365,	0.9740,	1.0129,	1.0534,	1.0956,	1.1394,	1.1850,	1.2324,	1.2817,	1.3329,	1.3862,	1.4417,	1.4994};
+	float sweep_amplitude[] =  {0.04,  0.04,   0.04,   0.04,   0.04,	0.04,	0.04,	0.04,	0.04,	0.05,	0.05,	0.05,	0.05,	0.05,	0.05,	0.05,	0.05,	0.05,	0.05,	0.06,	0.06,	0.06,	0.06,	0.06,	0.06,	0.06,	0.06,	0.06,	0.06}; 
+	int i = 0;
 	//float time_since_trans_start = (float)(hrt_absolute_time() - _vtol_schedule.f_trans_start_t) * 1e-6f;
-
+	int sweep_times;
+	sweep_times = sizeof(sweep_frequency) / sizeof(sweep_frequency[0]);
 	_actuators_out_0->timestamp = hrt_absolute_time();
 	_actuators_out_0->timestamp_sample = _actuators_mc_in->timestamp_sample;
 
@@ -686,12 +692,32 @@ void Tailsitter::fill_actuator_outputs()
 				_actuators_out_0->control[actuator_controls_s::INDEX_PITCH] = _actuators_mc_in->control[actuator_controls_s::INDEX_PITCH] + sweep_signal;
 				break;
 		    case ROLL_RATE:
-		    		time_since_sweep = (float)(hrt_absolute_time() - _vtol_schedule.sweep_start) * 1e-6f;
-		    		// Exponantial Chirp
-				sweep_signal_phase = 8.0f * 6.2831f * time_since_sweep;//sweep_min_frequency * time_since_sweep + 0.0187f * (sweep_max_frequency - sweep_min_frequency) * (overall_time / 4.0f * powf(2.7183f, (4.0f * time_since_sweep / overall_time)) - time_since_sweep);
+		    	time_since_sweep = (float)(hrt_absolute_time() - _vtol_schedule.sweep_start) * 1e-6f;
+		    	while(1) {
+		    		if(time_since_sweep > sweep_end_time[sweep_times-1]) {
+		    			sweep_signal = 0.0f;
+		    			break;
+		    		}
+ 					else if(time_since_sweep >= sweep_begin_time[i] && time_since_sweep < sweep_end_time[i]) {
+		    			sweep_signal_phase = sweep_frequency[i] * 6.2831f * (time_since_sweep - sweep_begin_time[i]);
+		    	    	sweep_signal = sweep_amplitude[i] * sinf(sweep_signal_phase); 
+		    	    	break;
+                	}
+                	else if(time_since_sweep >= sweep_end_time[i] && time_since_sweep < sweep_begin_time[i+1]) {
+                		sweep_signal = 0.0f;
+                		break;	
+                	}
+                	else {
+                		sweep_signal = 0.0f;
+                		i++;
+                	}
+		    	}	
+				//sweep_signal_phase = 8.0f * 6.2831f * time_since_sweep;
+				// Exp Chirp
+				//sweep_min_frequency * time_since_sweep + 0.0187f * (sweep_max_frequency - sweep_min_frequency) * (overall_time / 4.0f * powf(2.7183f, (4.0f * time_since_sweep / overall_time)) - time_since_sweep);
 				// Linear Chirp
 				// sweep_signal_phase = sweep_min_frequency  * time_since_sweep + 0.5f * (sweep_max_frequency - sweep_min_frequency) * (time_since_sweep * time_since_sweep / overall_time);
-				sweep_signal = (float)(_params->vt_sweep_amp) * sinf(sweep_signal_phase);
+				//sweep_signal = (float)(_params->vt_sweep_amp) * sinf(sweep_signal_phase);
 				_actuators_out_0->sweep_input = sweep_signal;
 				_actuators_out_0->control[actuator_controls_s::INDEX_ROLL] = _actuators_mc_in->control[actuator_controls_s::INDEX_ROLL] + sweep_signal;
 				break;
