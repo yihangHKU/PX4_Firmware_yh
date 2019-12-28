@@ -700,14 +700,15 @@ void Tailsitter::fill_actuator_outputs()
 			     	sweep_signal_phase = sweep_min_frequency * time_since_sweep + 0.0187f * (sweep_max_frequency - sweep_min_frequency) * (overall_time / 4.0f * powf(2.7183f, (4.0f * time_since_sweep / overall_time)) - time_since_sweep);
 				    // Linear Chirp
 			    	//sweep_signal_phase = sweep_min_frequency  * time_since_sweep + 0.5f * (sweep_max_frequency - sweep_min_frequency) * (time_since_sweep * time_since_sweep / overall_time);
+				    sweep_signal = (float)(_params->vt_sweep_amp) * sinf(sweep_signal_phase);
 				}
 				else{
 					// Exponential Chirp
-					sweep_signal_phase = sweep_min_frequency * overall_time + 0.0187f * (sweep_max_frequency - sweep_min_frequency) * (powf(2.7183f, 4.0f)/4.0f - 1.0f) * overall_time + sweep_max_frequency * (time_since_sweep - overall_time);
+					//sweep_signal_phase = sweep_min_frequency * overall_time + 0.0187f * (sweep_max_frequency - sweep_min_frequency) * (powf(2.7183f, 4.0f)/4.0f - 1.0f) * overall_time + sweep_max_frequency * (time_since_sweep - overall_time);
+					sweep_signal = 0.0f;
 					// linear Chirp
 					//sweep_signal_phase = 0.5f * (sweep_max_frequency + sweep_min_frequency) * overall_time + sweep_max_frequency * (time_since_sweep - overall_time);
 				}
-				sweep_signal = (float)(_params->vt_sweep_amp) * sinf(sweep_signal_phase);
 				_actuators_out_0->sweep_input = sweep_signal;
 				_actuators_out_0->control[actuator_controls_s::INDEX_ROLL] = _actuators_mc_in->control[actuator_controls_s::INDEX_ROLL] + sweep_signal;
 				break;
