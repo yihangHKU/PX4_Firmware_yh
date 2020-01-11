@@ -746,6 +746,8 @@ MulticopterAttitudeControl::control_attitude_rates(float dt)
 	if (_notch_enable.get()) {
 		//mavlink_log_critical(&mavlink_log_pub, "notch: ON");
 		rates(1) = _notch_filter.apply(rates(1));
+		rates(2) = _notch_filter.apply(rates(2));
+		rates(3) = _notch_filter.apply(rates(3));
 	}
 
 	/* apply low-pass filtering to the rates for D-term */

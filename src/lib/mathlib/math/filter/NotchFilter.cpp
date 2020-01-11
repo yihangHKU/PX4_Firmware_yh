@@ -32,9 +32,9 @@ void NotchFilter::set_notch_filter(float sample_freq, float notch_freq, float no
 	_notch_freq = notch_freq;
 
 	float a = 0.0f;
-	float w = 2.0f * 3.14159f * notch_freq;
+	float w = 2.0f * sample_freq * tanf(3.14159f * notch_freq / sample_freq);
 
-	if (w <= 0.0001f) {
+	if (w >= 0.0001f) {
 		a = 1.0f / (w * w);
 	}
 	else {
