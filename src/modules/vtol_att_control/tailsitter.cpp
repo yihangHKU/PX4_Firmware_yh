@@ -113,14 +113,14 @@ void Tailsitter::update_vtol_state()
 	*/
 	_euler = matrix::Quatf(_v_att->q);//Eulerf _euler = Quatf(_v_att->q);
 	float time_since_trans_start = (float)(hrt_absolute_time() - _vtol_schedule.f_trans_start_t) * 1e-6f;
-	static bool _lock_to_mc = 0;
+	//static bool _lock_to_mc = 0;
 	//float pitch = _euler.theta();
 
 	if (!_attc->is_fixed_wing_requested()) {
 
 		switch (_vtol_schedule.flight_mode) { // user switchig to MC mode
 		case MC_MODE:
-			_lock_to_mc = 0;
+			//_lock_to_mc = 0;
 			_vtol_schedule.b_trans_start_t = hrt_absolute_time();
 			break;
 
@@ -149,10 +149,7 @@ void Tailsitter::update_vtol_state()
 			// Safety
 			if (_local_pos->z < (- _params->vt_safe_alt)) {
 				// initialise a front transition
-				if (!_lock_to_mc)
-				{
-					_vtol_schedule.flight_mode 	= TRANSITION_FRONT_P1;
-				}
+				_vtol_schedule.flight_mode 	= TRANSITION_FRONT_P1;
 			}
 			else
 			{
@@ -174,10 +171,11 @@ void Tailsitter::update_vtol_state()
 				_vtol_schedule.fw_start = hrt_absolute_time();
 
 				// check if we have reached airspeed  and the transition time is over the setpoint to switch to TRANSITION P2 mode
-				if (time_since_trans_start >= (_params->front_trans_duration + _params_tailsitter.front_trans_dur_p2)) {
+				//if (time_since_trans_start >= (_params->front_trans_duration + _params_tailsitter.front_trans_dur_p2)) {
+				if (time_since_trans_start >= (_params->front_trans_duration)) {
 					//_vtol_schedule.flight_mode = FW_MODE;
-					_lock_to_mc = 1;
-					_vtol_schedule.flight_mode = MC_MODE; //Just for the wall suck
+					//_lock_to_mc = 1;
+					_vtol_schedule.flight_mode = TRANSITION_FRONT_P1; //Just for the wall suck
 
 				}
 
@@ -367,18 +365,18 @@ void Tailsitter::update_transition_state()
 		case TOP_WALL:
 			{
 				_q_trans_sp = Quatf(_v_att->q);
-				float acc_time = 0.7f;
-				if (time_since_trans_start <= acc_time)
-				{
-					_trans_end_thrust = _mc_hover_thrust;
-				}
-				else if (time_since_trans_start <= _params->front_trans_duration)
-				{
+				//float acc_time = 0.7f;
+				//if (time_since_trans_start <= acc_time)
+				//{
+				//	_trans_end_thrust = _mc_hover_thrust;
+				//}
+				//if (time_since_trans_start <= _params->front_trans_duration)
+				//{
 					_trans_end_thrust = _mc_hover_thrust *  _params->suck_thr_ratio;
-				}
-				else {
-					_trans_end_thrust = _mc_hover_thrust * (0.5f);
-				}
+				//}
+				//else {
+				//	_trans_end_thrust = _mc_hover_thrust *  _params->suck_thr_ratio;
+				//}
 
 				if ((_vtol_vehicle_status->ticks_since_trans % 50) == 5)
 				{
