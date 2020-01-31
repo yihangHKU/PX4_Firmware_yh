@@ -121,6 +121,10 @@ MulticopterAttitudeControl::MulticopterAttitudeControl() :
 	_v_att_sp.q_d[0] = 1.f;
 
 	_rates_prev.zero();
+	_middle_element_0.zero();
+	_middle_element_1.zero();
+	_middle_element_2.zero();
+	_middle_element_3.zero();
 	_rates_prev_filtered.zero();
 	_rates_sp.zero();
 	_rates_int.zero();
@@ -785,11 +789,28 @@ MulticopterAttitudeControl::control_attitude_rates(float dt)
 	/* angular rates error */
 	Vector3f rates_err = _rates_sp - rates;
 
-	_att_control = rates_p_scaled.emult(rates_err) +
+	/*_att_control = rates_p_scaled.emult(rates_err) +
 		       _rates_int -
 		       rates_d_scaled.emult(rates_filtered - _rates_prev_filtered) / dt +
 		       _rate_ff.emult(_rates_sp);
+    */
+	// roll use loopshaping controller
+    _middle_element_0(0) = rates_err(0) + 2.218f * _middle_element_1(0) - 1.456f * _middle_element_2(0) + 0.2377f * _middle_element_3(0);
+    _att_control(0) = 0.02667f * _middle_element_0(0) - 0.02629f * _middle_element_1(0) - 0.02667f * _middle_element_2(0) + 0.02629f * _middle_element_3(0); 
 
+    // pitch and yaw use PID controller
+    _att_control(1) = rates_p_scaled(1) * rates_err(1) +
+    				_rates_int(1) -
+    				rates_d_scaled(1) * (rates_filtered(1)-_rates_prev_filtered(1)) / dt +
+    				_rate_ff(1) * _rates_sp(1);
+    _att_control(2) = rates_p_scaled(2) * rates_err(2) +
+    				_rates_int(2) -
+    				rates_d_scaled(2) * (rates_filtered(2)-_rates_prev_filtered(2)) / dt +
+    				_rate_ff(2) * _rates_sp(2);	
+
+    _middle_element_3 = _middle_element_2;
+    _middle_element_2 = _middle_element_1;
+    _middle_element_1 = _middle_element_0;
 	_rates_prev = rates;
 	_rates_prev_filtered = rates_filtered;
 
