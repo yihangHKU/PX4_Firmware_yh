@@ -125,6 +125,7 @@ MulticopterAttitudeControl::MulticopterAttitudeControl() :
 	_middle_element_1.zero();
 	_middle_element_2.zero();
 	_middle_element_3.zero();
+	_middle_element_4.zero();
 	_rates_prev_filtered.zero();
 	_rates_sp.zero();
 	_rates_int.zero();
@@ -795,9 +796,13 @@ MulticopterAttitudeControl::control_attitude_rates(float dt)
 		       _rate_ff.emult(_rates_sp);
     */
 	// roll use loopshaping controller
-    _middle_element_0(0) = rates_err(0) + 2.218f * _middle_element_1(0) - 1.456f * _middle_element_2(0) + 0.2377f * _middle_element_3(0);
-    _att_control(0) = 0.02667f * _middle_element_0(0) - 0.02629f * _middle_element_1(0) - 0.02667f * _middle_element_2(0) + 0.02629f * _middle_element_3(0); 
+    //_middle_element_0(0) = rates_err(0) + 2.218f * _middle_element_1(0) - 1.456f * _middle_element_2(0) + 0.2377f * _middle_element_3(0);
+    //_att_control(0) = 0.02667f * _middle_element_0(0) - 0.02629f * _middle_element_1(0) - 0.02667f * _middle_element_2(0) + 0.02629f * _middle_element_3(0); 
 
+	// roll use h infinity controller
+	_middle_element_0(0) = rates_err(0) + 2.607f * _middle_element_1(0) - 2.846f * _middle_element_2(0) + 1.584f * _middle_element_3(0) - 0.4259f * _middle_element_4(0);
+	_att_control(0) = _rates_int(0) + 0.03895f * _middle_element_0(0) - 0.04277f * _middle_element_1(0) - 0.01792f * _middle_element_2(0) + 0.04509f * _middle_element_3(0) - 0.01871f * _middle_element_4(0);
+ 
     // pitch and yaw use PID controller
     _att_control(1) = rates_p_scaled(1) * rates_err(1) +
     				_rates_int(1) -
@@ -808,6 +813,7 @@ MulticopterAttitudeControl::control_attitude_rates(float dt)
     				rates_d_scaled(2) * (rates_filtered(2)-_rates_prev_filtered(2)) / dt +
     				_rate_ff(2) * _rates_sp(2);	
 
+    _middle_element_4 = _middle_element_3;
     _middle_element_3 = _middle_element_2;
     _middle_element_2 = _middle_element_1;
     _middle_element_1 = _middle_element_0;
@@ -816,6 +822,8 @@ MulticopterAttitudeControl::control_attitude_rates(float dt)
 
 	/* update integral only if we are not landed */
 	if (!_vehicle_land_detected.maybe_landed && !_vehicle_land_detected.landed) {
+		//redefine roll Ki for H infinity controller
+		rates_i_scaled(AXIS_INDEX_ROLL) = 0.014f;
 		for (int i = AXIS_INDEX_ROLL; i < AXIS_COUNT; i++) {
 			// Check for positive control saturation
 			bool positive_saturation =
@@ -843,6 +851,7 @@ MulticopterAttitudeControl::control_attitude_rates(float dt)
 
 			// Perform the integration using a first order method and do not propagate the result if out of range or invalid
 			float rate_i = _rates_int(i) + rates_i_scaled(i) * rates_err(i) * dt;
+			
 
 			if (PX4_ISFINITE(rate_i) && rate_i > -_rate_int_lim(i) && rate_i < _rate_int_lim(i)) {
 				_rates_int(i) = rate_i;
