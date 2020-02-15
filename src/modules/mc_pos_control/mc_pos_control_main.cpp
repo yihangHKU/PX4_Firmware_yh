@@ -154,7 +154,8 @@ private:
 		(ParamInt<px4::params::MPC_ALT_MODE>) MPC_ALT_MODE,
 		(ParamFloat<px4::params::MPC_IDLE_TKO>) MPC_IDLE_TKO, /**< time constant for smooth takeoff ramp */
 		(ParamInt<px4::params::MPC_OBS_AVOID>) MPC_OBS_AVOID, /**< enable obstacle avoidance */
-		(ParamFloat<px4::params::MPC_TILTMAX_LND>) MPC_TILTMAX_LND /**< maximum tilt for landing and smooth takeoff */
+		(ParamFloat<px4::params::MPC_TILTMAX_LND>) MPC_TILTMAX_LND, /**< maximum tilt for landing and smooth takeoff */
+		(ParamFloat<px4::params::SUCK_THR_RATIO>) SUCK_THR_RATIO 
 	);
 
 	control::BlockDerivative _vel_x_deriv; /**< velocity derivative in x */
@@ -759,6 +760,11 @@ MulticopterPositionControl::run()
 			_control.generateThrustYawSetpoint(_dt);
 
 			matrix::Vector3f thr_sp = _control.getThrustSetpoint();
+
+			// decrease thr_sp near ground in Offboard mode to use landing gear
+			if(_control_mode.flag_control_offboard_enabled && _local_pos.z_valid && _local_pos.z > -0.105f){
+				thr_sp(2) = thr_sp(2) * SUCK_THR_RATIO.get();
+			}
 
 			// Adjust thrust setpoint based on landdetector only if the
 			// vehicle is NOT in pure Manual mode and NOT in smooth takeoff
