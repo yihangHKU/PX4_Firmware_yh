@@ -56,6 +56,7 @@
 #include <uORB/topics/vehicle_status.h>
 #include <uORB/topics/vehicle_trajectory_waypoint.h>
 #include <uORB/topics/landing_gear.h>
+#include <uORB/topics/manual_control_setpoint.h>
 
 #include <float.h>
 #include <mathlib/mathlib.h>
@@ -69,6 +70,7 @@
 #include "PositionControl.hpp"
 #include "Utility/ControlMath.hpp"
 
+static  orb_advert_t mavlink_log_pub = nullptr;
 using namespace time_literals;
 using namespace matrix;
 /**
@@ -122,6 +124,7 @@ private:
 	int		_att_sub{-1};				/**< vehicle attitude */
 	int		_home_pos_sub{-1}; 			/**< home position */
 	int		_traj_wp_avoidance_sub{-1};	/**< trajectory waypoint */
+	int 	_manual_control_sp_sub{-1}; /**< manual control*/
 
 	int _task_failure_count{0};         /**< counter for task failures */
 
@@ -129,6 +132,10 @@ private:
 	float _takeoff_reference_z; /**< Z-position when takeoff was initiated */
 	bool _smooth_velocity_takeoff =
 		false; /**< Smooth velocity takeoff can be initiated either through position or velocity setpoint */
+
+	float near_ground_thrust;
+	float to_ground_begin_time;
+	int ticks_from_begin;
 
 	vehicle_status_s 			_vehicle_status{};		/**< vehicle status */
 	vehicle_land_detected_s 		_vehicle_land_detected{};	/**< vehicle land detected */
@@ -139,6 +146,7 @@ private:
 	vehicle_trajectory_waypoint_s		_traj_wp_avoidance{};		/**< trajectory waypoint */
 	vehicle_trajectory_waypoint_s		_traj_wp_avoidance_desired{};	/**< desired waypoints, inputs to an obstacle avoidance module */
 	landing_gear_s _landing_gear{};
+	manual_control_setpoint_s    _manual_control_sp{};
 
 	int8_t		_old_landing_gear_position;
 
@@ -473,6 +481,12 @@ MulticopterPositionControl::poll_subscriptions()
 	if (updated) {
 		orb_copy(ORB_ID(vehicle_trajectory_waypoint), _traj_wp_avoidance_sub, &_traj_wp_avoidance);
 	}
+
+	orb_check(_manual_control_sp_sub, &updated);
+
+	if (updated) {
+		orb_copy(ORB_ID(manual_control_setpoint), _manual_control_sp_sub, &_manual_control_sp);
+	}
 }
 
 void
@@ -592,6 +606,8 @@ MulticopterPositionControl::run()
 	_att_sub = orb_subscribe(ORB_ID(vehicle_attitude));
 	_home_pos_sub = orb_subscribe(ORB_ID(home_position));
 	_traj_wp_avoidance_sub = orb_subscribe(ORB_ID(vehicle_trajectory_waypoint));
+	_manual_control_sp_sub = orb_subscribe(ORB_ID(manual_control_setpoint));
+
 
 	// get initial values for all parameters and subscribtions
 	parameters_update(true);
@@ -761,9 +777,39 @@ MulticopterPositionControl::run()
 
 			matrix::Vector3f thr_sp = _control.getThrustSetpoint();
 
-			// decrease thr_sp near ground in Offboard mode to use landing gear
-			if(_control_mode.flag_control_offboard_enabled && _local_pos.z_valid && _local_pos.z > -0.400f){
-				thr_sp(2) = thr_sp(2) * SUCK_THR_RATIO.get();
+			// decrease thr_sp near ground in Offboard mode or Swith landing gear stick to use landing gear
+			if(_control_mode.flag_control_offboard_enabled && _local_pos.z_valid && _local_pos.z > -0.400f ){
+				float time_since_to_ground = (hrt_absolute_time() - to_ground_begin_time) * 1e-6f;
+				float thr_decrease_ratio = SUCK_THR_RATIO.get();
+				ticks_from_begin ++;
+				if(time_since_to_ground < 2.0f){
+					thr_sp(2) = near_ground_thrust - time_since_to_ground / 2.0f *(1.0f - thr_decrease_ratio);
+				}
+				else{
+					thr_sp(2) = near_ground_thrust * thr_decrease_ratio;
+				}
+				if((ticks_from_begin % 50) ==5){
+				mavlink_log_critical(&mavlink_log_pub, "Start Thrust: %.4f Current: %.4f time: %.4f", (double)(near_ground_thrust), (double)(thr_sp(2)), (double)(time_since_to_ground));
+				}
+			}
+			else if(!_control_mode.flag_control_offboard_enabled && _manual_control_sp.gear_switch == manual_control_setpoint_s::SWITCH_POS_ON && _local_pos.z > -0.450f){
+				float time_since_to_ground = (hrt_absolute_time() - to_ground_begin_time) * 1e-6f;
+				float thr_decrease_ratio = SUCK_THR_RATIO.get();
+				ticks_from_begin ++;
+				if(time_since_to_ground < 2.0f){
+					thr_sp(2) = near_ground_thrust - time_since_to_ground / 2.0f *(1.0f - thr_decrease_ratio);
+				}
+				else{
+					thr_sp(2) = near_ground_thrust * thr_decrease_ratio;
+				}
+				if((ticks_from_begin % 50) ==5){
+				mavlink_log_critical(&mavlink_log_pub, "Start Thrust: %.4f Current: %.4f time: %.4f", (double)(near_ground_thrust), (double)(thr_sp(2)), (double)(time_since_to_ground));
+				}
+			}
+			else{
+				near_ground_thrust = thr_sp(2);
+				to_ground_begin_time = hrt_absolute_time();
+				ticks_from_begin = 0;
 			}
 
 			// Adjust thrust setpoint based on landdetector only if the
@@ -851,6 +897,7 @@ MulticopterPositionControl::run()
 	orb_unsubscribe(_att_sub);
 	orb_unsubscribe(_home_pos_sub);
 	orb_unsubscribe(_traj_wp_avoidance_sub);
+	orb_unsubscribe(_manual_control_sp_sub);
 }
 
 void
