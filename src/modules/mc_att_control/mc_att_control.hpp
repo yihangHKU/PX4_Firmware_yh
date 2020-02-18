@@ -208,6 +208,11 @@ private:
 	matrix::Vector3f _rates_prev_filtered;		/**< angular rates on previous step (low-pass filtered) */
 	matrix::Vector3f _rates_sp;			/**< angular rates setpoint */
 	matrix::Vector3f _rates_int;			/**< angular rates integral error */
+	matrix::Vector3f _middle_element_0;       /**< for loopshaping use */
+	matrix::Vector3f _middle_element_1;       /**< for loopshaping use */
+	matrix::Vector3f _middle_element_2;       /**< for loopshaping use */
+	matrix::Vector3f _middle_element_3;       /**< for loopshaping use */
+	matrix::Vector3f _middle_element_4;  	  /**< for loopshaping use */
 
 	matrix::Vector3f _att_control;			/**< attitude control vector */
 	float		_thrust_sp{0.0f};		/**< thrust setpoint */
