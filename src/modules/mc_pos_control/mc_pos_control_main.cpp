@@ -781,7 +781,7 @@ MulticopterPositionControl::run()
 				float thr_decrease_ratio = SUCK_THR_RATIO.get();
 				ticks_from_begin ++;
 				if(time_since_to_ground < 2.0f){
-					thr_sp(2) = near_ground_thrust - time_since_to_ground / 2.0f *(1.0f - thr_decrease_ratio);
+					thr_sp(2) = near_ground_thrust + time_since_to_ground / 2.0f *(1.0f - thr_decrease_ratio);
 				}
 				else{
 					thr_sp(2) = near_ground_thrust * thr_decrease_ratio;
@@ -795,7 +795,7 @@ MulticopterPositionControl::run()
 				float thr_decrease_ratio = SUCK_THR_RATIO.get();
 				ticks_from_begin ++;
 				if(time_since_to_ground < 2.0f){
-					thr_sp(2) = near_ground_thrust - time_since_to_ground / 2.0f *(1.0f - thr_decrease_ratio);
+					thr_sp(2) = near_ground_thrust + time_since_to_ground / 2.0f *(1.0f - thr_decrease_ratio);
 				}
 				else{
 					thr_sp(2) = near_ground_thrust * thr_decrease_ratio;
@@ -803,6 +803,7 @@ MulticopterPositionControl::run()
 				if((ticks_from_begin % 50) ==5){
 				mavlink_log_critical(&mavlink_log_pub, "Start Thrust: %.4f Current: %.4f time: %.4f", (double)(near_ground_thrust), (double)(thr_sp(2)), (double)(time_since_to_ground));
 				}
+
 			}
 			else{
 				near_ground_thrust = thr_sp(2);
