@@ -760,7 +760,7 @@ MulticopterPositionControl::run()
 			matrix::Vector3f thr_sp = _control.getThrustSetpoint();
 
 			// decrease thr_sp near ground in Offboard mode to use landing gear
-			if(_control_mode.flag_control_offboard_enabled && _local_pos.z_valid && _local_pos.z > -0.105f){
+			if(_control_mode.flag_control_offboard_enabled && _local_pos.z_valid && _local_pos.z > -0.400f){
 				thr_sp(2) = thr_sp(2) * SUCK_THR_RATIO.get();
 			}
 

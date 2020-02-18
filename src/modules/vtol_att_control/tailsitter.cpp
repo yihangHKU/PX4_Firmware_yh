@@ -147,7 +147,7 @@ void Tailsitter::update_vtol_state()
 		switch (_vtol_schedule.flight_mode) {
 		case MC_MODE:
 			// Safety
-			if (_local_pos->z < (- _params->vt_safe_alt)) {
+			if (_local_pos->z > (- _params->vt_safe_alt)) {
 				// initialise a front transition
 				_vtol_schedule.flight_mode 	= TRANSITION_FRONT_P1;
 			}
@@ -191,7 +191,7 @@ void Tailsitter::update_vtol_state()
 	
 	/* Safety altitude protection, stay at MC mode when trige for once */
 	static bool alt_danger = false;
-	if ((_local_pos->z > (- _params->vt_safe_alt)) || (alt_danger == true))
+	if ((_local_pos->z < (- _params->vt_safe_alt)) || (alt_danger == true))
 	{
 		if((_vtol_schedule.flight_mode == FW_MODE) || (_vtol_schedule.flight_mode == TRANSITION_FRONT_P1))
 		{
