@@ -124,6 +124,11 @@ MulticopterAttitudeControl::MulticopterAttitudeControl() :
 	_rates_int.zero();
 	_thrust_sp = 0.0f;
 	_att_control.zero();
+	_middle_element_0.zero();
+	_middle_element_1.zero();
+	_middle_element_2.zero();
+	_middle_element_3.zero();
+	_middle_element_4.zero();
 
 	/* initialize thermal corrections as we might not immediately get a topic update (only non-zero values) */
 	for (unsigned i = 0; i < 3; i++) {
@@ -701,16 +706,38 @@ MulticopterAttitudeControl::control_attitude_rates(float dt)
 	/* angular rates error */
 	Vector3f rates_err = _rates_sp - rates;
 
-	_att_control = rates_p_scaled.emult(rates_err) +
+	/*_att_control = rates_p_scaled.emult(rates_err) +
 		       _rates_int -
 		       rates_d_scaled.emult(rates_filtered - _rates_prev_filtered) / dt +
 		       _rate_ff.emult(_rates_sp);
+	*/
+	// roll use h infinity controller
+	_middle_element_0(0) = rates_err(0) + 2.607f * _middle_element_1(0) - 2.846f * _middle_element_2(0) + 1.584f * _middle_element_3(0) - 0.4259f * _middle_element_4(0);
+	_att_control(0) = _rates_int(0) + 0.03895f * _middle_element_0(0) - 0.04277f * _middle_element_1(0) - 0.01792f * _middle_element_2(0) + 0.04509f * _middle_element_3(0) - 0.01871f * _middle_element_4(0);
+ 
+
+    // pitch and yaw use PID controller
+    _att_control(1) = rates_p_scaled(1) * rates_err(1) +
+    				_rates_int(1) -
+    				rates_d_scaled(1) * (rates_filtered(1)-_rates_prev_filtered(1)) / dt +
+    				_rate_ff(1) * _rates_sp(1);
+    _att_control(2) = rates_p_scaled(2) * rates_err(2) +
+    				_rates_int(2) -
+    				rates_d_scaled(2) * (rates_filtered(2)-_rates_prev_filtered(2)) / dt +
+    				_rate_ff(2) * _rates_sp(2);	
+
+    _middle_element_4 = _middle_element_3;
+    _middle_element_3 = _middle_element_2;
+    _middle_element_2 = _middle_element_1;
+    _middle_element_1 = _middle_element_0;
 
 	_rates_prev = rates;
 	_rates_prev_filtered = rates_filtered;
 
 	/* update integral only if we are not landed */
 	if (!_vehicle_land_detected.maybe_landed && !_vehicle_land_detected.landed) {
+		//redefine roll Ki for H infinity controller
+		rates_i_scaled(AXIS_INDEX_ROLL) = 0.014f;
 		for (int i = AXIS_INDEX_ROLL; i < AXIS_COUNT; i++) {
 			// Check for positive control saturation
 			bool positive_saturation =
