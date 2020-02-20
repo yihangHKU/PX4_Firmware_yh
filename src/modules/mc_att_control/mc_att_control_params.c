@@ -115,6 +115,58 @@ PARAM_DEFINE_FLOAT(MC_ROLLRATE_D, 0.003f);
 PARAM_DEFINE_FLOAT(MC_ROLLRATE_FF, 0.0f);
 
 /**
+ * Gear Roll P gain
+ *
+ * Roll proportional gain, i.e. desired angular speed in rad/s for error 1 rad.
+ *
+ * @unit 1/s
+ * @min 0.0
+ * @max 12
+ * @decimal 2
+ * @increment 0.1
+ * @group Multicopter Attitude Control
+ */
+PARAM_DEFINE_FLOAT(GEAR_ROLL_P, 6.5f);
+
+/**
+ * Gear Roll rate P gain
+ *
+ * Roll rate proportional gain, i.e. control output for angular speed error 1 rad/s.
+ *
+ * @min 0.0
+ * @max 0.5
+ * @decimal 3
+ * @increment 0.01
+ * @group Multicopter Attitude Control
+ */
+PARAM_DEFINE_FLOAT(GEAR_ROLLRATE_P, 0.15f);
+
+/**
+ * Gear Roll rate I gain
+ *
+ * Roll rate integral gain. Can be set to compensate static thrust difference or gravity center offset.
+ *
+ * @min 0.0
+ * @decimal 3
+ * @increment 0.01
+ * @group Multicopter Attitude Control
+ */
+PARAM_DEFINE_FLOAT(GEAR_ROLLRATE_I, 0.05f);
+
+/**
+ * GEAR Roll rate D gain
+ *
+ * Roll rate differential gain. Small values help reduce fast oscillations. If value is too big oscillations will appear again.
+ *
+ * @min 0.0
+ * @max 0.01
+ * @decimal 4
+ * @increment 0.0005
+ * @group Multicopter Attitude Control
+ */
+PARAM_DEFINE_FLOAT(GEAR_ROLLRATE_D, 0.003f);
+
+/**
  * Pitch P gain
  *
  * Pitch proportional gain, i.e. desired angular speed in rad/s for error 1 rad.
