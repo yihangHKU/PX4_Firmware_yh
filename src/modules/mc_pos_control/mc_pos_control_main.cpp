@@ -136,6 +136,7 @@ private:
 	float near_ground_thrust;
 	float to_ground_begin_time;
 	int ticks_from_begin;
+	int ticks_not_begin;
 
 	vehicle_status_s 			_vehicle_status{};		/**< vehicle status */
 	vehicle_land_detected_s 		_vehicle_land_detected{};	/**< vehicle land detected */
@@ -814,7 +815,10 @@ MulticopterPositionControl::run()
 				near_ground_thrust = thr_sp(2);
 				to_ground_begin_time = hrt_absolute_time();
 				ticks_from_begin = 0;
-				mavlink_log_critical(&mavlink_log_pub, "Start Thrust: %.4f Current: %.4f status: not gear", (double)(near_ground_thrust),(double)(thr_sp(2)));
+				ticks_not_begin ++;
+				if((ticks_not_begin % 50) == 5){
+					mavlink_log_critical(&mavlink_log_pub, "Start Thrust: %.4f Current: %.4f status: not gear", (double)(near_ground_thrust),(double)(thr_sp(2)));
+				}
 			}
 
 			// Adjust thrust setpoint based on landdetector only if the
