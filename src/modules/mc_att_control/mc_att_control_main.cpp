@@ -710,7 +710,8 @@ MulticopterAttitudeControl::control_attitude_rates(float dt)
 		rates_p_scaled(0) = _gear_rollrate_p;
 		rates_i_scaled(0) = _gear_rollrate_i;
 		rates_d_scaled(0) = _gear_rollrate_d;
-		if(hrt_absolute_time() % 50 == 5){
+		ticks ++;
+		if((ticks % 50) == 5){
 			mavlink_log_critical(&mavlink_log_pub, "Gear PID used");
 		}
 	}
