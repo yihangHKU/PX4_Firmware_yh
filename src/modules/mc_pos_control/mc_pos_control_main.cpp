@@ -779,6 +779,7 @@ MulticopterPositionControl::run()
 
 			// decrease thr_sp near ground in Offboard mode or Swith landing gear stick to use landing gear
 			if(_control_mode.flag_control_offboard_enabled && _local_pos.z_valid && _local_pos.z > -0.400f ){
+				gear.landing_gear = landing_gear_s::GEAR_DOWN;
 				float time_since_to_ground = (hrt_absolute_time() - to_ground_begin_time) * 1e-6f;
 				float thr_decrease_ratio = SUCK_THR_RATIO.get();
 				ticks_from_begin ++;
@@ -793,6 +794,7 @@ MulticopterPositionControl::run()
 				}
 			}
 			else if(!_control_mode.flag_control_offboard_enabled && _manual_control_sp.gear_switch == manual_control_setpoint_s::SWITCH_POS_ON && _local_pos.z > -0.450f){
+				gear.landing_gear = landing_gear_s::GEAR_DOWN;
 				float time_since_to_ground = (hrt_absolute_time() - to_ground_begin_time) * 1e-6f;
 				float thr_decrease_ratio = SUCK_THR_RATIO.get();
 				ticks_from_begin ++;
@@ -808,9 +810,11 @@ MulticopterPositionControl::run()
 
 			}
 			else{
+				gear.landing_gear = landing_gear_s::GEAR_UP;
 				near_ground_thrust = thr_sp(2);
 				to_ground_begin_time = hrt_absolute_time();
 				ticks_from_begin = 0;
+				mavlink_log_critical(&mavlink_log_pub, "Start Thrust: %.4f Current: %.4f status: not gear", (double)(near_ground_thrust),(double)(thr_sp(2)));
 			}
 
 			// Adjust thrust setpoint based on landdetector only if the
@@ -860,21 +864,21 @@ MulticopterPositionControl::run()
 			publish_attitude();
 
 			// if there's any change in landing gear setpoint publish it
-			if (gear.landing_gear != _old_landing_gear_position
-				&& gear.landing_gear != landing_gear_s::GEAR_KEEP) {
+			//if (gear.landing_gear != _old_landing_gear_position
+			//	&& gear.landing_gear != landing_gear_s::GEAR_KEEP) {
 
-				_landing_gear.landing_gear = gear.landing_gear;
-				_landing_gear.timestamp = hrt_absolute_time();
+			_landing_gear.landing_gear = gear.landing_gear;
+			_landing_gear.timestamp = hrt_absolute_time();
 
-				if (_landing_gear_pub != nullptr) {
-					orb_publish(ORB_ID(landing_gear), _landing_gear_pub, &_landing_gear);
+			if (_landing_gear_pub != nullptr) {
+				orb_publish(ORB_ID(landing_gear), _landing_gear_pub, &_landing_gear);
 
-				} else {
-					_landing_gear_pub = orb_advertise(ORB_ID(landing_gear), &_landing_gear);
-				}
+			} else {
+				_landing_gear_pub = orb_advertise(ORB_ID(landing_gear), &_landing_gear);
 			}
+			//}
 
-			_old_landing_gear_position = gear.landing_gear;
+			//_old_landing_gear_position = gear.landing_gear;
 
 		} else {
 			// no flighttask is active: set attitude setpoint to idle

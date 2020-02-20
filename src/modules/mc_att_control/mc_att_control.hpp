@@ -230,6 +230,11 @@ private:
 		(ParamFloat<px4::params::MC_ROLLRATE_D>) _roll_rate_d,
 		(ParamFloat<px4::params::MC_ROLLRATE_FF>) _roll_rate_ff,
 
+		(ParamFloat<px4::params::GEAR_ROLL_P>) _gear_r_p,
+		(ParamFloat<px4::params::GEAR_ROLLRATE_P>) _gear_rrate_p,
+		(ParamFloat<px4::params::GEAR_ROLLRATE_I>) _gear_rrate_i,
+		(ParamFloat<px4::params::GEAR_ROLLRATE_D>) _gear_rrate_d,
+
 		(ParamFloat<px4::params::MC_PITCH_P>) _pitch_p,
 		(ParamFloat<px4::params::MC_PITCHRATE_P>) _pitch_rate_p,
 		(ParamFloat<px4::params::MC_PITCHRATE_I>) _pitch_rate_i,
@@ -297,6 +302,10 @@ private:
 	matrix::Vector3f _rate_int_lim;		/**< integrator state limit for rate loop */
 	matrix::Vector3f _rate_d;		/**< D gain for angular rate error */
 	matrix::Vector3f _rate_ff;		/**< Feedforward gain for desired rates */
+	float _gear_roll_p;             /* P gain for roll control for gear use*/
+	float _gear_rollrate_p;             /* P gain for roll angular rate error for gear use*/
+	float _gear_rollrate_i;             /* I gain for roll angular rate error for gear use*/
+	float _gear_rollrate_d;             /* D gain for roll angular rate error for gear use*/
 
 	matrix::Vector3f _mc_rate_max;		/**< attitude rate limits in stabilized modes */
 	matrix::Vector3f _auto_rate_max;	/**< attitude rate limits in auto modes */
