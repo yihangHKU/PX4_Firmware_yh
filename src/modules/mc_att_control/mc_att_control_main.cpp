@@ -563,9 +563,9 @@ MulticopterAttitudeControl::control_attitude()
 	/* prepare yaw weight from the ratio between roll/pitch and yaw gains */
 	Vector3f attitude_gain = _attitude_p;
 	/* swith to gear roll P */
-	if(_landing_gear.landing_gear == landing_gear_s::GEAR_DOWN){
-		attitude_gain(0) = _gear_roll_p;
-	}
+	//if(_landing_gear.landing_gear == landing_gear_s::GEAR_DOWN){
+	attitude_gain(0) = _gear_roll_p;
+	//}
 	const float roll_pitch_gain = (attitude_gain(0) + attitude_gain(1)) / 2.f;
 	const float yaw_w = math::constrain(attitude_gain(2) / roll_pitch_gain, 0.f, 1.f);
 	attitude_gain(2) = roll_pitch_gain;
@@ -706,15 +706,15 @@ MulticopterAttitudeControl::control_attitude_rates(float dt)
 	Vector3f rates_d_scaled = _rate_d.emult(pid_attenuations(_tpa_breakpoint_d.get(), _tpa_rate_d.get()));
 
 	/* swith to gear rollrate PID*/
-	if(_landing_gear.landing_gear == landing_gear_s::GEAR_DOWN){
-		rates_p_scaled(0) = _gear_rollrate_p;
-		rates_i_scaled(0) = _gear_rollrate_i;
-		rates_d_scaled(0) = _gear_rollrate_d;
-		ticks ++;
-		if((ticks % 50) == 5){
-			mavlink_log_critical(&mavlink_log_pub, "Gear PID used");
-		}
-	}
+	//if(_landing_gear.landing_gear == landing_gear_s::GEAR_DOWN){
+	rates_p_scaled(0) = _gear_rollrate_p;
+	rates_i_scaled(0) = _gear_rollrate_i;
+	rates_d_scaled(0) = _gear_rollrate_d;
+	//ticks ++;
+	//if((ticks % 50) == 5){
+	//	mavlink_log_critical(&mavlink_log_pub, "Gear PID used");
+	//}
+	//}
 
 	/* apply notch filter for pitch rate */
 	if (_notch_enable.get()) {
@@ -734,18 +734,18 @@ MulticopterAttitudeControl::control_attitude_rates(float dt)
 		       _rate_ff.emult(_rates_sp);
 	*/
 
-	if(_landing_gear.landing_gear != landing_gear_s::GEAR_DOWN){
+	//if(_landing_gear.landing_gear != landing_gear_s::GEAR_DOWN){
 		// roll use h infinity controller
-		_middle_element_0(0) = rates_err(0) + 2.607f * _middle_element_1(0) - 2.846f * _middle_element_2(0) + 1.584f * _middle_element_3(0) - 0.4259f * _middle_element_4(0);
-		_att_control(0) = _rates_int(0) + 0.03895f * _middle_element_0(0) - 0.04277f * _middle_element_1(0) - 0.01792f * _middle_element_2(0) + 0.04509f * _middle_element_3(0) - 0.01871f * _middle_element_4(0);
- 	}
- 	else{
+	//	_middle_element_0(0) = rates_err(0) + 2.607f * _middle_element_1(0) - 2.846f * _middle_element_2(0) + 1.584f * _middle_element_3(0) - 0.4259f * _middle_element_4(0);
+	//	_att_control(0) = _rates_int(0) + 0.03895f * _middle_element_0(0) - 0.04277f * _middle_element_1(0) - 0.01792f * _middle_element_2(0) + 0.04509f * _middle_element_3(0) - 0.01871f * _middle_element_4(0);
+ 	//}
+ 	//else{
  		// roll use PID controller
  		_att_control(0) = rates_p_scaled(0) * rates_err(0) +
     				_rates_int(0) -
     				rates_d_scaled(0) * (rates_filtered(0)-_rates_prev_filtered(0)) / dt +
     				_rate_ff(0) * _rates_sp(0);
- 	}
+ 	//}
 
     // pitch and yaw use PID controller
     _att_control(1) = rates_p_scaled(1) * rates_err(1) +
@@ -768,7 +768,7 @@ MulticopterAttitudeControl::control_attitude_rates(float dt)
 	/* update integral only if we are not landed */
 	if (!_vehicle_land_detected.maybe_landed && !_vehicle_land_detected.landed) {
 		//redefine roll Ki for H infinity controller
-		rates_i_scaled(AXIS_INDEX_ROLL) = 0.014f;
+		//rates_i_scaled(AXIS_INDEX_ROLL) = 0.014f;
 		for (int i = AXIS_INDEX_ROLL; i < AXIS_COUNT; i++) {
 			// Check for positive control saturation
 			bool positive_saturation =
@@ -848,6 +848,10 @@ MulticopterAttitudeControl::publish_actuator_controls()
 	_actuators.control[7] = (float)_landing_gear.landing_gear;
 	_actuators.timestamp = hrt_absolute_time();
 	_actuators.timestamp_sample = _sensor_gyro.timestamp;
+	ticks ++;
+	if((ticks % 50) == 5){
+		mavlink_log_critical(&mavlink_log_pub, "Thrust: %.4f",(double)(_thrust_sp));
+	}
 
 	/* scale effort by battery status */
 	if (_bat_scale_en.get() && _battery_status.scale > 0.0f) {

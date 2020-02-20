@@ -797,8 +797,8 @@ MulticopterPositionControl::run()
 				float time_since_to_ground = (hrt_absolute_time() - to_ground_begin_time) * 1e-6f;
 				float thr_decrease_ratio = SUCK_THR_RATIO.get();
 				ticks_from_begin ++;
-				if(time_since_to_ground < 2.0f){
-					thr_sp(2) = near_ground_thrust + time_since_to_ground / 2.0f *(1.0f - thr_decrease_ratio);
+				if(time_since_to_ground < 4.0f){
+					thr_sp(2) = near_ground_thrust + time_since_to_ground / 4.0f *(1.0f - thr_decrease_ratio);
 				}
 				else{
 					thr_sp(2) = near_ground_thrust * thr_decrease_ratio;
