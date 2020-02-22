@@ -727,3 +727,28 @@ PARAM_DEFINE_INT32(MPC_OBS_AVOID, 0);
  */
 PARAM_DEFINE_INT32(MPC_YAW_MODE, 0);
 
+/**
+ * gear throttle ratio.
+ *
+ * Specifies the heading in Auto.
+ *
+ * @min 0.3
+ * @max 1
+ * @increment 0.01
+ * @group Multicopter Position Control
+ */
+PARAM_DEFINE_FLOAT(GEAR_THR_RATIO, 0.85f);
+
+/**
+ * ground height erro.
+ *
+ * Specifies the heading in Auto.
+ *
+ * @min -0.500
+ * @max 0.500
+ * @increment 0.001
+ * @group Multicopter Position Control
+ */
+PARAM_DEFINE_FLOAT(GEAR_HT_ERRO, 0.0f);
+
+
