@@ -55,6 +55,7 @@
 #include <uORB/topics/vehicle_local_position_setpoint.h>
 #include <uORB/topics/vehicle_status.h>
 #include <uORB/topics/vehicle_trajectory_waypoint.h>
+#include <uORB/topics/vehicle_odometry.h>
 #include <uORB/topics/landing_gear.h>
 #include <uORB/topics/manual_control_setpoint.h>
 
@@ -125,6 +126,7 @@ private:
 	int		_home_pos_sub{-1}; 			/**< home position */
 	int		_traj_wp_avoidance_sub{-1};	/**< trajectory waypoint */
 	int 	_manual_control_sp_sub{-1}; /**< manual control*/
+	int     _odometry_sub{-1};
 
 	int _task_failure_count{0};         /**< counter for task failures */
 
@@ -132,9 +134,13 @@ private:
 	float _takeoff_reference_z; /**< Z-position when takeoff was initiated */
 	bool _smooth_velocity_takeoff =
 		false; /**< Smooth velocity takeoff can be initiated either through position or velocity setpoint */
-
+	bool ground_height_get = false;
+	float sum = 0.0f;
+	float ground_height;
+	int ticks_from_position_begin{0};
 	float near_ground_thrust;
 	float to_ground_begin_time;
+	float close_ground_begin_time;
 	int ticks_from_begin;
 	int ticks_not_begin;
 
@@ -148,6 +154,7 @@ private:
 	vehicle_trajectory_waypoint_s		_traj_wp_avoidance_desired{};	/**< desired waypoints, inputs to an obstacle avoidance module */
 	landing_gear_s _landing_gear{};
 	manual_control_setpoint_s    _manual_control_sp{};
+	vehicle_odometry_s			_odometry_pos{};
 
 	int8_t		_old_landing_gear_position;
 
@@ -488,6 +495,10 @@ MulticopterPositionControl::poll_subscriptions()
 	if (updated) {
 		orb_copy(ORB_ID(manual_control_setpoint), _manual_control_sp_sub, &_manual_control_sp);
 	}
+
+	if (updated) {
+		orb_copy(ORB_ID(vehicle_odometry), _odometry_sub, &_odometry_pos);
+	}
 }
 
 void
@@ -608,6 +619,7 @@ MulticopterPositionControl::run()
 	_home_pos_sub = orb_subscribe(ORB_ID(home_position));
 	_traj_wp_avoidance_sub = orb_subscribe(ORB_ID(vehicle_trajectory_waypoint));
 	_manual_control_sp_sub = orb_subscribe(ORB_ID(manual_control_setpoint));
+	_odometry_sub = orb_subscribe(ORB_ID(vehicle_odometry));
 
 
 	// get initial values for all parameters and subscribtions
@@ -779,13 +791,39 @@ MulticopterPositionControl::run()
 			matrix::Vector3f thr_sp = _control.getThrustSetpoint();
 
 			// decrease thr_sp near ground in Offboard mode or Swith landing gear stick to use landing gear
-			if(_control_mode.flag_control_offboard_enabled && _local_pos.z_valid && _local_pos.z > -0.400f ){
-				gear.landing_gear = landing_gear_s::GEAR_DOWN;
+			ticks_from_position_begin ++;
+			//if(ticks_from_position_begin % 50 ==5){
+			//	mavlink_log_critical(&mavlink_log_pub,"ticks_from_position_begin: %d, height: %.4f",(int)(ticks_from_position_begin),(double)(_odometry_pos.z));
+			//}
+			if(ticks_from_position_begin >3000 && ticks_from_position_begin <=3250){
+				sum += _odometry_pos.z;
+			}
+			else if(ticks_from_position_begin > 3250 && !ground_height_get){
+				ground_height = sum/250 -(0.1809f-0.1655f);  //compensate the height difference from landing off and landing gear
+				ground_height_get = true;
+				mavlink_log_critical(&mavlink_log_pub,"ground_height_get: %.4f , you can takeoff now!",(double)(ground_height));
+			}
+
+
+			if(_control_mode.flag_control_offboard_enabled && _local_pos.z_valid && ground_height_get == true && _odometry_pos.z > (ground_height - 0.005f) ){
 				float time_since_to_ground = (hrt_absolute_time() - to_ground_begin_time) * 1e-6f;
 				float thr_decrease_ratio = SUCK_THR_RATIO.get();
 				ticks_from_begin ++;
-				if(time_since_to_ground < 2.0f){
-					thr_sp(2) = near_ground_thrust + time_since_to_ground / 2.0f *(1.0f - thr_decrease_ratio);
+				close_ground_begin_time = hrt_absolute_time();
+				if(_odometry_pos.z > (ground_height - 0.005f)){
+					float time_since_close_ground = (hrt_absolute_time() - close_ground_begin_time)*1e-6f;
+					if(time_since_close_ground > 0.3f){
+						gear.landing_gear = landing_gear_s::GEAR_DOWN;
+					}
+					else{
+						gear.landing_gear = landing_gear_s::GEAR_KEEP;
+					}
+				}
+				else{
+					gear.landing_gear = landing_gear_s::GEAR_KEEP;
+				}
+				if(time_since_to_ground < 4.0f){
+					thr_sp(2) = near_ground_thrust + time_since_to_ground / 4.0f *(1.0f - thr_decrease_ratio);
 				}
 				else{
 					thr_sp(2) = near_ground_thrust * thr_decrease_ratio;
@@ -794,13 +832,28 @@ MulticopterPositionControl::run()
 				mavlink_log_critical(&mavlink_log_pub, "Start Thrust: %.4f Current: %.4f time: %.4f", (double)(near_ground_thrust), (double)(thr_sp(2)), (double)(time_since_to_ground));
 				}
 			}
-			else if(!_control_mode.flag_control_offboard_enabled && _manual_control_sp.gear_switch == manual_control_setpoint_s::SWITCH_POS_ON && _local_pos.z > -0.450f){
-				gear.landing_gear = landing_gear_s::GEAR_DOWN;
+			else if(!_control_mode.flag_control_offboard_enabled && _manual_control_sp.gear_switch == manual_control_setpoint_s::SWITCH_POS_ON && ground_height_get == true && _odometry_pos.z > (ground_height - 0.200f)){
 				float time_since_to_ground = (hrt_absolute_time() - to_ground_begin_time) * 1e-6f;
 				float thr_decrease_ratio = SUCK_THR_RATIO.get();
 				ticks_from_begin ++;
-				if(time_since_to_ground < 4.0f){
-					thr_sp(2) = near_ground_thrust + time_since_to_ground / 4.0f *(1.0f - thr_decrease_ratio);
+				if(_odometry_pos.z > (ground_height - 0.005f)){
+					float time_since_close_ground = (hrt_absolute_time() - close_ground_begin_time)*1e-6f;
+					if(time_since_close_ground > 0.3f){
+						gear.landing_gear = landing_gear_s::GEAR_DOWN;
+						if((ticks_from_begin % 50) ==5){
+							mavlink_log_critical(&mavlink_log_pub, "LANDING GEAR DOWN!");
+						}
+					}
+					else{
+						gear.landing_gear = landing_gear_s::GEAR_KEEP;
+					}
+				}
+				else{
+					gear.landing_gear = landing_gear_s::GEAR_KEEP;
+					close_ground_begin_time = hrt_absolute_time();
+				}
+				if(time_since_to_ground < 10.0f){
+					thr_sp(2) = near_ground_thrust + time_since_to_ground / 10.0f *(1.0f - thr_decrease_ratio);
 				}
 				else{
 					thr_sp(2) = near_ground_thrust * thr_decrease_ratio;
@@ -811,7 +864,7 @@ MulticopterPositionControl::run()
 
 			}
 			else{
-				gear.landing_gear = landing_gear_s::GEAR_UP;
+				gear.landing_gear = landing_gear_s::GEAR_KEEP;
 				near_ground_thrust = thr_sp(2);
 				to_ground_begin_time = hrt_absolute_time();
 				ticks_from_begin = 0;
@@ -907,6 +960,7 @@ MulticopterPositionControl::run()
 	orb_unsubscribe(_home_pos_sub);
 	orb_unsubscribe(_traj_wp_avoidance_sub);
 	orb_unsubscribe(_manual_control_sp_sub);
+	orb_unsubscribe(_odometry_sub);
 }
 
 void
