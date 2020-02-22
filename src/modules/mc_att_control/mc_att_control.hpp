@@ -301,6 +301,8 @@ private:
 	float _gear_rollrate_i;             /* I gain for roll angular rate error for gear use*/
 	float _gear_rollrate_d;             /* D gain for roll angular rate error for gear use*/
 	int ticks;
+	int last_gear_state;
+	int now_gear_state;
 
 	matrix::Vector3f _mc_rate_max;		/**< attitude rate limits in stabilized modes */
 	matrix::Vector3f _auto_rate_max;	/**< attitude rate limits in auto modes */
