@@ -751,4 +751,28 @@ PARAM_DEFINE_FLOAT(GEAR_THR_RATIO, 0.85f);
  */
 PARAM_DEFINE_FLOAT(GEAR_HT_ERRO, 0.0f);
 
+/**
+ * height permit to degress throttle
+ *
+ * Specifies the heading in Auto.
+ *
+ * @min 0.100
+ * @max 1.000
+ * @increment 0.001
+ * @group Multicopter Position Control
+ */
+PARAM_DEFINE_FLOAT(GEAR_HT_LAND, 0.200f);
+
+/**
+ * TO ground velocity 
+ *
+ * Specifies the heading in Auto.
+ *
+ * @min 0.001
+ * @max 0.100
+ * @increment 0.001
+ * @group Multicopter Position Control
+ */
+PARAM_DEFINE_FLOAT(GEAR_TO_GRD_VEL, 0.01f);
+
 

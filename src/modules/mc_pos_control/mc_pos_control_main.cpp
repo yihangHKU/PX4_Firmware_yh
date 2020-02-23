@@ -145,6 +145,7 @@ private:
 	float close_ground_begin_time;
 	int ticks_from_begin;
 	int ticks_not_begin;
+	bool to_ground_begin = false;
 
 	vehicle_status_s 			_vehicle_status{};		/**< vehicle status */
 	vehicle_land_detected_s 		_vehicle_land_detected{};	/**< vehicle land detected */
@@ -175,7 +176,9 @@ private:
 		(ParamFloat<px4::params::MPC_TILTMAX_LND>) MPC_TILTMAX_LND, /**< maximum tilt for landing and smooth takeoff */
 		(ParamFloat<px4::params::SUCK_THR_RATIO>) SUCK_THR_RATIO,
 		(ParamFloat<px4::params::GEAR_THR_RATIO>) GEAR_THR_RATIO,
-		(ParamFloat<px4::params::GEAR_HT_ERRO>) GEAR_HT_ERRO
+		(ParamFloat<px4::params::GEAR_HT_ERRO>) GEAR_HT_ERRO,
+		(ParamFloat<px4::params::GEAR_HT_LAND>) GEAR_HT_LAND,
+		(ParamFloat<px4::params::GEAR_TO_GRD_VEL>) GEAR_TO_GRD_VEL
 
 	);
 
@@ -786,6 +789,10 @@ MulticopterPositionControl::run()
 			}
 
 			// update position controller setpoints
+			/*if(to_ground_begin && _odometry_pos.z >){
+				float to_ground_vel = GEAR_TO_GRD_VEL.get();
+				setpoint.vz= to_ground_vel;
+			}*/
 			if (!_control.updateSetpoint(setpoint)) {
 				warn_rate_limited("Position-Control Setpoint-Update failed");
 			}
@@ -797,9 +804,9 @@ MulticopterPositionControl::run()
 
 			// decrease thr_sp near ground in Offboard mode or Swith landing gear stick to use landing gear
 			ticks_from_position_begin ++;
-			//if(ticks_from_position_begin % 50 ==5){
-			//	mavlink_log_critical(&mavlink_log_pub,"ticks_from_position_begin: %d, height: %.4f",(int)(ticks_from_position_begin),(double)(_odometry_pos.z));
-			//}
+			if(ticks_from_position_begin % 200 ==5){
+				mavlink_log_critical(&mavlink_log_pub,"ticks_from_position_begin: %d, height: %.4f",(int)(ticks_from_position_begin),(double)(_odometry_pos.z));
+			}
 			if(ticks_from_position_begin >4000 && ticks_from_position_begin <=5000){
 				sum += _odometry_pos.z;
 			}
@@ -813,6 +820,7 @@ MulticopterPositionControl::run()
 			float thr_decrease_ratio_gear = GEAR_THR_RATIO.get();
 			//float thr_decrease_ratio_gear = 0.85f;
 			float thr_decrease_ratio = SUCK_THR_RATIO.get();
+			float height_permit_land = GEAR_HT_LAND.get();
 
 
 
@@ -842,9 +850,9 @@ MulticopterPositionControl::run()
 				mavlink_log_critical(&mavlink_log_pub, "Start Thrust: %.4f Current: %.4f time: %.4f", (double)(near_ground_thrust), (double)(thr_sp(2)), (double)(time_since_to_ground));
 				}
 			}
-			else if(!_control_mode.flag_control_offboard_enabled && _manual_control_sp.gear_switch == manual_control_setpoint_s::SWITCH_POS_ON && ground_height_get == true && _odometry_pos.z > (ground_height - 0.250f)){
+			else if(!_control_mode.flag_control_offboard_enabled && _manual_control_sp.gear_switch == manual_control_setpoint_s::SWITCH_POS_ON && ground_height_get == true && _odometry_pos.z > (ground_height - height_permit_land)){
 				float time_since_to_ground = (hrt_absolute_time() - to_ground_begin_time) * 1e-6f;
-				
+				to_ground_begin = true;
 				ticks_from_begin ++;
 				if(_odometry_pos.z > (ground_height - 0.01f)){
 					float time_since_close_ground = (hrt_absolute_time() - close_ground_begin_time)*1e-6f;
@@ -889,6 +897,7 @@ MulticopterPositionControl::run()
 
 			}
 			else{
+				to_ground_begin = false;
 				gear.landing_gear = landing_gear_s::GEAR_KEEP;
 				near_ground_thrust = thr_sp(2);
 				to_ground_begin_time = hrt_absolute_time();
