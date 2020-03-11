@@ -127,6 +127,7 @@ set(config_module_list
 	modules/mc_att_control
 	modules/mc_pos_control
 	modules/vtol_att_control
+	modules/module_test_yh
 
 	#
 	# Logging
