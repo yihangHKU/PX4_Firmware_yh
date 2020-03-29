@@ -258,7 +258,7 @@ void PositionControl::_velocityController(const float &dt)
 		_thr_int(2) += vel_err(2) * MPC_Z_VEL_I.get() * dt;
 
 		// limit thrust integral
-		_thr_int(2) = math::min(fabsf(_thr_int(2)), MPC_THR_MAX.get()) * math::sign(_thr_int(2));
+		//_thr_int(2) = math::min(fabsf(_thr_int(2)), MPC_THR_MAX.get()) * math::sign(_thr_int(2));
 	}
 
 	// Saturate thrust setpoint in D-direction.

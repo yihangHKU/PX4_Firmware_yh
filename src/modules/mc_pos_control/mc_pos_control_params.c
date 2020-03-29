@@ -752,6 +752,18 @@ PARAM_DEFINE_FLOAT(GEAR_THR_RATIO, 0.85f);
 PARAM_DEFINE_FLOAT(GEAR_HT_ERRO, 0.0f);
 
 /**
+ * height permit to land
+ *
+ * Specifies the heading in Auto.
+ *
+ * @min 0.100
+ * @max 3.000
+ * @increment 0.001
+ * @group Multicopter Position Control
+ */
+PARAM_DEFINE_FLOAT(GEAR_HT_LAND1, 2.0f);
+
+/**
  * height permit to degress throttle
  *
  * Specifies the heading in Auto.
@@ -761,18 +773,40 @@ PARAM_DEFINE_FLOAT(GEAR_HT_ERRO, 0.0f);
  * @increment 0.001
  * @group Multicopter Position Control
  */
-PARAM_DEFINE_FLOAT(GEAR_HT_LAND, 0.200f);
+PARAM_DEFINE_FLOAT(GEAR_HT_LAND2, 0.20f);
 
 /**
- * TO ground velocity 
+ * TO ground high velocity 
  *
  * Specifies the heading in Auto.
  *
  * @min 0.001
- * @max 0.100
+ * @max 1.000
  * @increment 0.001
  * @group Multicopter Position Control
  */
-PARAM_DEFINE_FLOAT(GEAR_TO_GRD_VEL, 0.01f);
+PARAM_DEFINE_FLOAT(GEAR_LAND_VEL_H, 0.2f);
 
+/**
+ * TO ground low velocity 
+ *
+ * Specifies the heading in Auto.
+ *
+ * @min 0.001
+ * @max 0.500
+ * @increment 0.001
+ * @group Multicopter Position Control
+ */
+PARAM_DEFINE_FLOAT(GEAR_LAND_VEL_L, 0.01f);
 
+/**
+ * Land velocity ramp time
+ *
+ * Specifies the heading in Auto.
+ *
+ * @min 0.1
+ * @max 2.0
+ * @increment 0.001
+ * @group Multicopter Position Control
+ */
+PARAM_DEFINE_FLOAT(GEAR_RAMP_TIME, 0.5f);
