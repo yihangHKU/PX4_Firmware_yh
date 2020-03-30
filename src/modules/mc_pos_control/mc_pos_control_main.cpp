@@ -146,6 +146,8 @@ private:
 	int ticks_from_begin;
 	//int ticks_not_begin;
 	bool to_ground_begin = false;
+	float begin_ramp_time = 0.0f;
+	float ramp_time = 0.0f;
 
 	vehicle_status_s 			_vehicle_status{};		/**< vehicle status */
 	vehicle_land_detected_s 		_vehicle_land_detected{};	/**< vehicle land detected */
@@ -179,9 +181,9 @@ private:
 		(ParamFloat<px4::params::GEAR_HT_ERRO>) GEAR_HT_ERRO,
 		(ParamFloat<px4::params::GEAR_HT_LAND1>) GEAR_HT_LAND1,
 		(ParamFloat<px4::params::GEAR_HT_LAND2>) GEAR_HT_LAND2,
-		(ParamFloat<px4::params::GEAR_LAND_VEL_H>) GEAR_LAND_VEL_H,
-		(ParamFloat<px4::params::GEAR_LAND_VEL_L>) GEAR_LAND_VEL_L,
-		(ParamFloat<px4::params::GEAR_RAMP_TIME>) GEAR_RAMP_TIME
+		(ParamFloat<px4::params::GEAR_LAND_VEL_H>) to_ground_vel_h,
+		(ParamFloat<px4::params::GEAR_LAND_VEL_L>) to_ground_vel_l,
+		(ParamFloat<px4::params::GEAR_RAMP_TIME>) gear_ramp_time
 	);
 
 	control::BlockDerivative _vel_x_deriv; /**< velocity derivative in x */
@@ -793,16 +795,20 @@ MulticopterPositionControl::run()
 			// update position controller setpoints
 			// gear use to reset setpoint.vz
 			float height_slowdown = GEAR_HT_LAND2.get();
-			float to_ground_vel_h = GEAR_LAND_VEL_H.get();
+		/*	float to_ground_vel_h = GEAR_LAND_VEL_H.get();
 			float to_ground_vel_l = GEAR_LAND_VEL_L.get();
-			float gear_ramp_time = GEAR_RAMP_TIME.get();
+			float gear_ramp_time = GEAR_RAMP_TIME.get();*/
 			if(to_ground_begin && ground_height_get == true){
 				if(_states.position(2) > ground_height - height_slowdown){
-					setpoint.vz -= (to_ground_vel_h - to_ground_vel_l) * _dt / gear_ramp_time;
-					setpoint.vz = math::max(to_ground_vel_l, setpoint.vz);
+					ramp_time = (hrt_absolute_time() - begin_ramp_time) *1e-6f;
+					float ramp_velocity = to_ground_vel_h.get()-(to_ground_vel_h.get() - to_ground_vel_l.get()) * ramp_time/ gear_ramp_time.get();
+					setpoint.vz = math::max(to_ground_vel_l.get(),ramp_velocity);
+					/*setpoint.vz -= (to_ground_vel_h - to_ground_vel_l) * _dt / gear_ramp_time;
+					setpoint.vz = math::max(to_ground_vel_l, setpoint.vz);*/
 				}
 				else{
-					setpoint.vz = to_ground_vel_h;
+					setpoint.vz = to_ground_vel_h.get();
+					begin_ramp_time = hrt_absolute_time();
 				}
 			}
 			if (!_control.updateSetpoint(setpoint)) {
