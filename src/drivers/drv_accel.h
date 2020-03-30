@@ -49,6 +49,7 @@
 #define ACCEL_BASE_DEVICE_PATH	"/dev/accel"
 
 #include <uORB/topics/sensor_accel.h>
+#include <uORB/topics/sensor_custom.h>
 
 /** accel scaling factors; Vout = Vscale * (Vin + Voffset) */
 struct accel_calibration_s {

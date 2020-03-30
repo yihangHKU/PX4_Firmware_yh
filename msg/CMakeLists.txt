@@ -101,6 +101,7 @@ set(msg_files
 	sensor_baro.msg
 	sensor_bias.msg
 	sensor_combined.msg
+	sensor_custom.msg
 	sensor_correction.msg
 	sensor_gyro.msg
 	sensor_mag.msg

@@ -94,6 +94,7 @@
 #include <drivers/drv_gyro.h>
 #include <mathlib/math/filter/LowPassFilter2p.hpp>
 #include <lib/conversion/rotation.h>
+#include <systemlib/mavlink_log.h>
 
 #include "mpu6000.h"
 
@@ -109,6 +110,8 @@
 
  */
 #define MPU6000_TIMER_REDUCTION				200
+
+static  orb_advert_t mavlink_log_pub = nullptr;
 
 enum MPU_DEVICE_TYPE {
 	MPU_DEVICE_TYPE_MPU6000	= 6000,
@@ -192,7 +195,9 @@ private:
 	float			_accel_range_scale;
 	float			_accel_range_m_s2;
 	orb_advert_t		_accel_topic;
+	orb_advert_t		_sensor_custom_pub{nullptr};
 	int			_accel_orb_class_instance;
+	int         _custom_orb_class_instance;
 	int			_accel_class_instance;
 
 	ringbuffer::RingBuffer	*_gyro_reports;
@@ -478,6 +483,7 @@ MPU6000::MPU6000(device::Device *interface, const char *path_accel, const char *
 	_accel_range_m_s2(0.0f),
 	_accel_topic(nullptr),
 	_accel_orb_class_instance(-1),
+	_custom_orb_class_instance(-1),
 	_accel_class_instance(-1),
 	_gyro_reports(nullptr),
 	_gyro_scale{},
@@ -575,6 +581,8 @@ MPU6000::~MPU6000()
 	stop();
 
 	orb_unadvertise(_accel_topic);
+	//orb_unadvertise(_sensor_custom_pub);
+
 	orb_unadvertise(_gyro->_gyro_topic);
 
 	/* delete the gyro subdriver */
@@ -723,6 +731,15 @@ MPU6000::init()
 			     &_gyro->_gyro_orb_class_instance, (is_external()) ? ORB_PRIO_MAX : ORB_PRIO_HIGH);
 
 	if (_gyro->_gyro_topic == nullptr) {
+		PX4_WARN("ADVERT FAIL");
+	}
+
+	sensor_custom_s crp;
+
+	_sensor_custom_pub = orb_advertise_multi(ORB_ID(sensor_custom), &crp,
+					   &_custom_orb_class_instance, (is_external()) ? ORB_PRIO_MAX : ORB_PRIO_HIGH);
+
+	if (_sensor_custom_pub == nullptr) {
 		PX4_WARN("ADVERT FAIL");
 	}
 
@@ -1289,6 +1306,8 @@ MPU6000::ioctl(struct file *filp, int cmd, unsigned long arg)
 					float cutoff_freq_hz = _accel_filter_x.get_cutoff_freq();
 					float sample_rate = 1.0e6f / ticks;
 
+					
+
 					_accel_filter_x.set_cutoff_frequency(sample_rate, cutoff_freq_hz);
 					_accel_filter_y.set_cutoff_frequency(sample_rate, cutoff_freq_hz);
 					_accel_filter_z.set_cutoff_frequency(sample_rate, cutoff_freq_hz);
@@ -1619,6 +1638,15 @@ int
 MPU6000::measure()
 {
 	perf_count(_measure_interval);
+	if (0)
+	{
+		static int ii=0;
+		static hrt_abstime now = hrt_absolute_time();
+		hrt_abstime DT = hrt_absolute_time()-now;
+		now = hrt_absolute_time();
+		ii++;
+		if (ii%20==1){mavlink_log_critical(&mavlink_log_pub, "measure_interval:%.5f", (double)(DT*0.001f));}
+	}
 
 	if (_in_factory_test) {
 		// don't publish any data while in factory test mode
@@ -1739,6 +1767,7 @@ MPU6000::measure()
 	 */
 	sensor_accel_s arb;
 	sensor_gyro_s grb;
+	sensor_custom_s crb;
 
 	/*
 	 * Adjust and scale results to m/s^2.
@@ -1854,6 +1883,25 @@ MPU6000::measure()
 	if (gyro_notify) {
 		_gyro->parent_poll_notify();
 	}
+
+	/* Customed Message */
+	crb.timestamp = grb.timestamp;
+	crb.error_count = grb.error_count;
+
+	crb.device_id_acc = _device_id.devid;
+	crb.device_id_gyr = _gyro->_device_id.devid;
+
+	crb.acc_x = x_in_new;
+	crb.acc_y = y_in_new;
+	crb.acc_z = z_in_new;
+
+	crb.gry_x = x_gyro_in_new;
+	crb.gry_y = y_gyro_in_new;
+	crb.gry_z = z_gyro_in_new;
+
+	crb.temperature = _last_temperature;
+
+	orb_publish(ORB_ID(sensor_custom), _sensor_custom_pub, &crb);
 
 	if (accel_notify && !(_pub_blocked)) {
 		/* publish it */
