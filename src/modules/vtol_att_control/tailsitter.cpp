@@ -450,7 +450,6 @@ float Tailsitter::control_altitude(float time_since_trans_start, float alt_cmd, 
 
 	return (-1.0f * thrust_cmd);
 }
-#endif
 
 float Tailsitter::calc_pitch_rot(float time_since_trans_start) {
 	float angle = 0.0;

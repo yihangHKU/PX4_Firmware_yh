@@ -107,7 +107,7 @@ PARAM_DEFINE_INT32(VT_ELEV_MC_LOCK, 1);
  * @boolean
  * @group VTOL Attitude Control
  */
-PARAM_DEFINE_INT32(SWEEP_SUCK_TYPE, 0);
+PARAM_DEFINE_INT32(VT_SWEEP_TYPE, 0);
 
 /**
  * Set the amlitute of the sweep signal
@@ -116,7 +116,7 @@ PARAM_DEFINE_INT32(SWEEP_SUCK_TYPE, 0);
  * @boolean
  * @group VTOL Attitude Control
  */
-PARAM_DEFINE_FLOAT(SWEEP_SUCK_AMP, 0.2f);
+PARAM_DEFINE_FLOAT(VT_SWEEP_AMP, 0.2f);
 
 /*
 * The parameters of the vertical velocity controller

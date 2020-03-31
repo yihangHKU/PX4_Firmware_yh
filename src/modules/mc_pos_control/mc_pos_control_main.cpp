@@ -176,7 +176,6 @@ private:
 		(ParamFloat<px4::params::MPC_IDLE_TKO>) MPC_IDLE_TKO, /**< time constant for smooth takeoff ramp */
 		(ParamInt<px4::params::MPC_OBS_AVOID>) MPC_OBS_AVOID, /**< enable obstacle avoidance */
 		(ParamFloat<px4::params::MPC_TILTMAX_LND>) MPC_TILTMAX_LND, /**< maximum tilt for landing and smooth takeoff */
-		(ParamFloat<px4::params::SUCK_THR_RATIO>) SUCK_THR_RATIO,
 		(ParamFloat<px4::params::GEAR_THR_RATIO>) GEAR_THR_RATIO,
 		(ParamFloat<px4::params::GEAR_HT_ERRO>) GEAR_HT_ERRO,
 		(ParamFloat<px4::params::GEAR_HT_LAND1>) GEAR_HT_LAND1,

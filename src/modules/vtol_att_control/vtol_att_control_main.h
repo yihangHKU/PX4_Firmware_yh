@@ -114,7 +114,6 @@ public:
 	struct vehicle_attitude_setpoint_s 		*get_mc_virtual_att_sp() {return &_mc_virtual_att_sp;}
 	struct vehicle_control_mode_s 			*get_control_mode() {return &_v_control_mode;}
 	struct vehicle_land_detected_s			*get_land_detected() {return &_land_detected;}
-	struct pm3901_with_tof_s                *get_pm3901_with_tof() {return &_pm3901_tof_data;}
 	struct vehicle_local_position_s 		*get_local_pos() {return &_local_pos;}
 	struct vehicle_local_position_setpoint_s	*get_local_pos_sp() {return &_local_pos_sp;}
 	struct vtol_vehicle_status_s			*get_vtol_vehicle_status() {return &_vtol_vehicle_status;}
@@ -212,8 +211,8 @@ private:
 		param_t front_trans_timeout;
 		param_t mpc_xy_cruise;
 		param_t fw_motors_off;
-		param_t vt_sweep_type;
-		param_t vt_sweep_amp;
+		param_t vt_sweep_or_suck_type;
+		param_t vt_sweep_or_suck_amp;
 		param_t vt_vz_control_kp;
 		param_t vt_vz_control_ki;
 		param_t vt_vz_control_kd;

@@ -90,8 +90,8 @@ VtolAttitudeControl::VtolAttitudeControl()
 	_params_handles.front_trans_timeout = param_find("VT_TRANS_TIMEOUT");
 	_params_handles.mpc_xy_cruise = param_find("MPC_XY_CRUISE");
 	_params_handles.fw_motors_off = param_find("VT_FW_MOT_OFFID");
-	_params_handles.vt_sweep_type = param_find("VT_SWEEP_TYPE");
-	_params_handles.vt_sweep_amp = param_find("VT_SWEEP_AMP");
+	_params_handles.vt_sweep_or_suck_type = param_find("VT_SWEEP_TYPE");
+	_params_handles.vt_sweep_or_suck_amp = param_find("VT_SWEEP_AMP");
 	_params_handles.vt_vz_control_kp = param_find("VT_VZ_CONTROL_KP");
 	_params_handles.vt_vz_control_ki = param_find("VT_VZ_CONTROL_KI");
 	_params_handles.vt_vz_control_kd = param_find("VT_VZ_CONTROL_KD");
@@ -406,7 +406,7 @@ VtolAttitudeControl::mission_result_poll()
 /**
 * Check for pw3901 or tof data updates.
 */
-void
+/*void
 VtolAttitudeControl::pm3901_with_tof_poll()
 {
 	bool updated;
@@ -417,7 +417,7 @@ VtolAttitudeControl::pm3901_with_tof_poll()
 		orb_copy(ORB_ID(pm3901_with_tof), _pm3901_and_tof_sub, &_pm3901_tof_data);
 	}
 }
-
+*/
 /**
 * Check received command
 */
@@ -756,7 +756,7 @@ void VtolAttitudeControl::task_main()
 		vehicle_cmd_poll();
 		tecs_status_poll();
 		land_detected_poll();
-		pm3901_with_tof_poll();
+		//pm3901_with_tof_poll();
 		actuator_controls_fw_poll();
 		actuator_controls_mc_poll();
 
