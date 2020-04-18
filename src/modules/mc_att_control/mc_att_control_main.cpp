@@ -128,6 +128,7 @@ MulticopterAttitudeControl::MulticopterAttitudeControl() :
 	_rates_prev_filtered.zero();
 	_rates_sp.zero();
 	_rates_int.zero();
+	_attitude_int.zero();
 	_thrust_sp = 0.0f;
 	_att_control.zero();
 	_middle_element_0.zero();
@@ -154,20 +155,25 @@ MulticopterAttitudeControl::parameters_updated()
 
 	/* roll gains */
 	_attitude_p(0) = _roll_p.get();
+	_attitude_i(0) = _roll_i.get();
+	_attitude_int_lim(0) = _roll_integ_lim.get();
 	_rate_p(0) = _roll_rate_p.get();
 	_rate_i(0) = _roll_rate_i.get();
 	_rate_int_lim(0) = _roll_rate_integ_lim.get();
 	_rate_d(0) = _roll_rate_d.get();
 	_rate_ff(0) = _roll_rate_ff.get();
 	_gear_roll_p = _gear_r_p.get();
+	_gear_roll_i = _gear_r_i.get();
 	_gear_rollrate_p = _gear_rrate_p.get();
 	_gear_rollrate_i = _gear_rrate_i.get();
 	_gear_rollrate_d = _gear_rrate_d.get();
-
+	
 	/* roll gains for gear use */
 
 	/* pitch gains */
 	_attitude_p(1) = _pitch_p.get();
+	_attitude_i(1) = _pitch_i.get();
+	_attitude_int_lim(1) = _pitch_integ_lim.get();
 	_rate_p(1) = _pitch_rate_p.get();
 	_rate_i(1) = _pitch_rate_i.get();
 	_rate_int_lim(1) = _pitch_rate_integ_lim.get();
@@ -176,6 +182,8 @@ MulticopterAttitudeControl::parameters_updated()
 
 	/* yaw gains */
 	_attitude_p(2) = _yaw_p.get();
+	_attitude_i(2) = _yaw_i.get();
+	_attitude_int_lim(2) = _yaw_integ_lim.get();
 	_rate_p(2) = _yaw_rate_p.get();
 	_rate_i(2) = _yaw_rate_i.get()/10.0f; // just for temporary because the increment isn't enough
 	_rate_int_lim(2) = _yaw_rate_integ_lim.get();
@@ -571,7 +579,7 @@ MulticopterAttitudeControl::generate_attitude_setpoint(float dt, bool reset_yaw_
  * Output: '_rates_sp' vector, '_thrust_sp'
  */
 void
-MulticopterAttitudeControl::control_attitude()
+MulticopterAttitudeControl::control_attitude(float dt)
 {
 	vehicle_attitude_setpoint_poll();
 
@@ -680,7 +688,7 @@ MulticopterAttitudeControl::control_attitude()
 	}
 	else
 	{
-		_rates_sp = eq.emult(attitude_gain);
+		_rates_sp = eq.emult(attitude_gain) + _attitude_int;
 
 		/* Feed forward the yaw setpoint rate.
 		 * yaw_sp_move_rate is the feed forward commanded rotation around the world z-axis,
@@ -693,6 +701,21 @@ MulticopterAttitudeControl::control_attitude()
 
 		float yawspeed_sp = 0.0f;//q.dcm_z() *_rates_sp;
 		_rates_sp += q.inversed().dcm_z() * (_v_att_sp.yaw_sp_move_rate - yawspeed_sp);
+	}
+
+		/* reset integral if disarmed */
+	if (!_v_control_mode.flag_armed) {
+		_attitude_int.zero();
+	}
+	for (int i = AXIS_INDEX_ROLL; i < AXIS_COUNT; i++){
+		float attitude_i = _attitude_int(i) + _attitude_i(i) * eq(i) * dt;
+		if (PX4_ISFINITE(attitude_i) && attitude_i > -_attitude_int_lim(i) && attitude_i < _attitude_int_lim(i)) {
+			_attitude_int(i) = attitude_i;
+		}
+	}
+		/* explicitly limit the integrator state */
+	for (int i = AXIS_INDEX_ROLL; i < AXIS_COUNT; i++) {
+		_attitude_int(i) = math::constrain(_attitude_int(i), -_attitude_int_lim(i), _attitude_int_lim(i));
 	}
 
 	/* limit rates */
@@ -872,7 +895,7 @@ MulticopterAttitudeControl::control_attitude_rates(float dt)
 	if (!_vehicle_land_detected.maybe_landed && !_vehicle_land_detected.landed) {
 		//redefine roll Ki for H infinity controller
 		//if(_landing_gear.landing_gear != landing_gear_s::GEAR_DOWN){
-		rates_i_scaled(AXIS_INDEX_ROLL) = 0.014f;
+		rates_i_scaled(AXIS_INDEX_ROLL) = _hinf_roll_rate_i.get();
 /*		if(last_gear_state != now_gear_state){
 			_rates_int(AXIS_INDEX_ROLL) = 0.0f;
 		}*/
@@ -1099,7 +1122,7 @@ MulticopterAttitudeControl::run()
 						attitude_setpoint_generated = true;
 					}
 
-					control_attitude();
+					control_attitude(dt);
 					publish_rates_setpoint();
 				}
 

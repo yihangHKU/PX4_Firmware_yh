@@ -137,7 +137,7 @@ private:
 	/**
 	 * Attitude controller.
 	 */
-	void		control_attitude();
+	void		control_attitude(float dt);
 
 	/**
 	 * Attitude rates controller.
@@ -208,6 +208,7 @@ private:
 	matrix::Vector3f _rates_prev_filtered;		/**< angular rates on previous step (low-pass filtered) */
 	matrix::Vector3f _rates_sp;			/**< angular rates setpoint */
 	matrix::Vector3f _rates_int;			/**< angular rates integral error */
+	matrix::Vector3f _attitude_int;		    /* angular integral error*/
 	matrix::Vector3f _middle_element_0;       /**< for loopshaping use */
 	matrix::Vector3f _middle_element_1;       /**< for loopshaping use */
 	matrix::Vector3f _middle_element_2;       /**< for loopshaping use */
@@ -224,18 +225,24 @@ private:
 
 	DEFINE_PARAMETERS(
 		(ParamFloat<px4::params::MC_ROLL_P>) _roll_p,
+		(ParamFloat<px4::params::MC_ROLL_I>) _roll_i,
+		(ParamFloat<px4::params::MC_R_INT_LIM>) _roll_integ_lim,
 		(ParamFloat<px4::params::MC_ROLLRATE_P>) _roll_rate_p,
 		(ParamFloat<px4::params::MC_ROLLRATE_I>) _roll_rate_i,
 		(ParamFloat<px4::params::MC_RR_INT_LIM>) _roll_rate_integ_lim,
 		(ParamFloat<px4::params::MC_ROLLRATE_D>) _roll_rate_d,
 		(ParamFloat<px4::params::MC_ROLLRATE_FF>) _roll_rate_ff,
+		(ParamFloat<px4::params::MC_RRHINF_I>) _hinf_roll_rate_i,
 
 		(ParamFloat<px4::params::GEAR_ROLL_P>) _gear_r_p,
+		(ParamFloat<px4::params::GEAR_ROLL_I>) _gear_r_i,
 		(ParamFloat<px4::params::GEAR_ROLLRATE_P>) _gear_rrate_p,
 		(ParamFloat<px4::params::GEAR_ROLLRATE_I>) _gear_rrate_i,
 		(ParamFloat<px4::params::GEAR_ROLLRATE_D>) _gear_rrate_d,
 
 		(ParamFloat<px4::params::MC_PITCH_P>) _pitch_p,
+		(ParamFloat<px4::params::MC_PITCH_I>) _pitch_i,
+		(ParamFloat<px4::params::MC_P_INT_LIM>) _pitch_integ_lim,
 		(ParamFloat<px4::params::MC_PITCHRATE_P>) _pitch_rate_p,
 		(ParamFloat<px4::params::MC_PITCHRATE_I>) _pitch_rate_i,
 		(ParamFloat<px4::params::MC_PR_INT_LIM>) _pitch_rate_integ_lim,
@@ -243,6 +250,8 @@ private:
 		(ParamFloat<px4::params::MC_PITCHRATE_FF>) _pitch_rate_ff,
 
 		(ParamFloat<px4::params::MC_YAW_P>) _yaw_p,
+		(ParamFloat<px4::params::MC_YAW_I>) _yaw_i,
+		(ParamFloat<px4::params::MC_Y_INT_LIM>) _yaw_integ_lim,
 		(ParamFloat<px4::params::MC_YAWRATE_P>) _yaw_rate_p,
 		(ParamFloat<px4::params::MC_YAWRATE_I>) _yaw_rate_i,
 		(ParamFloat<px4::params::MC_YR_INT_LIM>) _yaw_rate_integ_lim,
@@ -297,12 +306,15 @@ private:
 	)
 
 	matrix::Vector3f _attitude_p;		/**< P gain for attitude control */
+	matrix::Vector3f _attitude_i;		/**< I gain for attitude control */
+	matrix::Vector3f _attitude_int_lim;  /*integrator state limit for attitude loop*/
 	matrix::Vector3f _rate_p;		/**< P gain for angular rate error */
 	matrix::Vector3f _rate_i;		/**< I gain for angular rate error */
 	matrix::Vector3f _rate_int_lim;		/**< integrator state limit for rate loop */
 	matrix::Vector3f _rate_d;		/**< D gain for angular rate error */
 	matrix::Vector3f _rate_ff;		/**< Feedforward gain for desired rates */
 	float _gear_roll_p;             /* P gain for roll control for gear use*/
+	float _gear_roll_i;				 /* I gain for roll control for gear use*/
 	float _gear_rollrate_p;             /* P gain for roll angular rate error for gear use*/
 	float _gear_rollrate_i;             /* I gain for roll angular rate error for gear use*/
 	float _gear_rollrate_d;             /* D gain for roll angular rate error for gear use*/
