@@ -863,7 +863,7 @@ MulticopterAttitudeControl::control_attitude_rates(float dt)
 	//if(_landing_gear.landing_gear != landing_gear_s::GEAR_DOWN){
 	// roll use h infinity controller
 	_middle_element_0(0) = rates_err(0) + 2.607f * _middle_element_1(0) - 2.846f * _middle_element_2(0) + 1.584f * _middle_element_3(0) - 0.4259f * _middle_element_4(0);
-	_att_control(0) = _rates_int(0) + 0.03895f * _middle_element_0(0) - 0.04277f * _middle_element_1(0) - 0.01792f * _middle_element_2(0) + 0.04509f * _middle_element_3(0) - 0.01871f * _middle_element_4(0);
+	_att_control_roll = _rates_int(0) + 0.03895f * _middle_element_0(0) - 0.04277f * _middle_element_1(0) - 0.01792f * _middle_element_2(0) + 0.04509f * _middle_element_3(0) - 0.01871f * _middle_element_4(0);
 /* 	else{
  		// roll use PID controller
  		_att_control(0) = rates_p_scaled(0) * rates_err(0) +
@@ -871,6 +871,34 @@ MulticopterAttitudeControl::control_attitude_rates(float dt)
     				rates_d_scaled(0) * (rates_filtered(0)-_rates_prev_filtered(0)) / dt +
     				_rate_ff(0) * _rates_sp(0);
  	}*/
+ 	if(_manual_control_sp.dob_switch == manual_control_setpoint_s::SWITCH_POS_ON)
+	{
+ 		_D1_middle_element_0 = _att_control(0) + 4.25f * _D1_middle_element_1 - 7.566f * _D1_middle_element_2 + 7.326f * _D1_middle_element_3 - 4.17f * _D1_middle_element_4 + 1.366f * _D1_middle_element_5 - 0.2065f * _D1_middle_element_6;
+ 		_d_estim_1 = -0.03156f * _D1_middle_element_0 + 0.1439f * _D1_middle_element_1 - 0.1448f * _D1_middle_element_2 - 0.3586f * _D1_middle_element_3 + 1.031f * _D1_middle_element_4 - 0.9443f * _D1_middle_element_5 + 0.3034f * _D1_middle_element_6;
+ 		_D2_middle_element_0 =  rates(0) + 3.462f * _D2_middle_element_1 - 4.518f * _D2_middle_element_2 + 2.629f * _D2_middle_element_3 - 0.5742f * _D2_middle_element_4;
+ 		_d_estim_2 = 0.1611f * _D2_middle_element_0 - 0.5203f * _D2_middle_element_1 + 0.631f * _D2_middle_element_2 - 0.3439f * _D2_middle_element_3 + 0.07209f * _D2_middle_element_4;
+ 		_d_estim = _d_estim_1 + _d_estim_2;
+ 		_att_control(0) = _att_control_roll - _d_estim;
+
+ 		_D1_middle_element_6 = _D1_middle_element_5;
+    	_D1_middle_element_5 = _D1_middle_element_4;
+    	_D2_middle_element_4 = _D1_middle_element_3;
+    	_D1_middle_element_3 = _D1_middle_element_2;
+    	_D1_middle_element_2 = _D1_middle_element_1;
+   		_D1_middle_element_1 = _D1_middle_element_0;
+
+   		_D2_middle_element_4 = _D2_middle_element_3;
+    	_D2_middle_element_3 = _D2_middle_element_2;
+  	    _D2_middle_element_2 = _D2_middle_element_1;
+    	_D2_middle_element_1 = _D2_middle_element_0;
+    	ticks++;
+    	if(ticks % 250 == 1){ 
+    		mavlink_log_critical(&mavlink_log_pub, "DOB switch on");
+    	}
+    }
+    else{
+    	_att_control(0) = _att_control_roll;
+    }
  	now_gear_state = _landing_gear.landing_gear;
 
     // pitch and yaw use PID controller

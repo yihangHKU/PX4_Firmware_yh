@@ -216,7 +216,23 @@ private:
 	matrix::Vector3f _middle_element_4;  	  /**< for loopshaping use */
 
 	matrix::Vector3f _att_control;			/**< attitude control vector */
+	float 	_d_estim{0.0f};                /*estimate disturbance in roll rate*/
+	float 	_d_estim_1{0.0f};				/*estimate disturbance by DOB D1*/
+	float 	_d_estim_2{0.0f};				/*estimate disturbance by DOB D2*/
+	float   _att_control_roll{0.0f};			/*original roll control from controller*/
 	float		_thrust_sp{0.0f};		/**< thrust setpoint */
+	float 	_D1_middle_element_0{0.0f};		/*DOB D1 middle element*/
+	float 	_D1_middle_element_1{0.0f};		/*DOB D1 middle element*/
+	float 	_D1_middle_element_2{0.0f};		/*DOB D1 middle element*/
+	float 	_D1_middle_element_3{0.0f};		/*DOB D1 middle element*/
+	float 	_D1_middle_element_4{0.0f};		/*DOB D1 middle element*/
+	float 	_D1_middle_element_5{0.0f};		/*DOB D1 middle element*/
+	float   _D1_middle_element_6{0.0f};		/*DOB D1 middle element*/
+	float 	_D2_middle_element_0{0.0f};		/*DOB D2 middle element*/
+	float 	_D2_middle_element_1{0.0f};		/*DOB D2 middle element*/
+	float 	_D2_middle_element_2{0.0f};		/*DOB D2 middle element*/
+	float 	_D2_middle_element_3{0.0f};		/*DOB D2 middle element*/
+	float 	_D2_middle_element_4{0.0f};		/*DOB D2 middle element*/
 
 	matrix::Dcmf _board_rotation;			/**< rotation matrix for the orientation that the board is mounted */
 

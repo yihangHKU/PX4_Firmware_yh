@@ -92,6 +92,7 @@ void initialize_parameter_handles(ParameterHandles &parameter_handles)
 	parameter_handles.rc_map_kill_sw = param_find("RC_MAP_KILL_SW");
 	parameter_handles.rc_map_arm_sw = param_find("RC_MAP_ARM_SW");
 	parameter_handles.rc_map_trans_sw = param_find("RC_MAP_TRANS_SW");
+	parameter_handles.rc_map_dob_sw = param_find("RC_MAP_DOB_SW");
 	parameter_handles.rc_map_gear_sw = param_find("RC_MAP_GEAR_SW");
 	parameter_handles.rc_map_stab_sw = param_find("RC_MAP_STAB_SW");
 	parameter_handles.rc_map_man_sw = param_find("RC_MAP_MAN_SW");
@@ -125,6 +126,7 @@ void initialize_parameter_handles(ParameterHandles &parameter_handles)
 	parameter_handles.rc_killswitch_th = param_find("RC_KILLSWITCH_TH");
 	parameter_handles.rc_armswitch_th = param_find("RC_ARMSWITCH_TH");
 	parameter_handles.rc_trans_th = param_find("RC_TRANS_TH");
+	parameter_handles.rc_dob_th = param_find("RC_DOB_TH");
 	parameter_handles.rc_gear_th = param_find("RC_GEAR_TH");
 	parameter_handles.rc_stab_th = param_find("RC_STAB_TH");
 	parameter_handles.rc_man_th = param_find("RC_MAN_TH");
@@ -292,6 +294,9 @@ int update_parameters(const ParameterHandles &parameter_handles, Parameters &par
 	if (param_get(parameter_handles.rc_map_trans_sw, &(parameters.rc_map_trans_sw)) != OK) {
 		PX4_WARN("%s", paramerr);
 	}
+	if (param_get(parameter_handles.rc_map_dob_sw, &(parameters.rc_map_dob_sw)) != OK) {
+		PX4_WARN("%s", paramerr);
+	}
 
 	if (param_get(parameter_handles.rc_map_flaps, &(parameters.rc_map_flaps)) != OK) {
 		PX4_WARN("%s", paramerr);
@@ -355,6 +360,9 @@ int update_parameters(const ParameterHandles &parameter_handles, Parameters &par
 	param_get(parameter_handles.rc_trans_th, &(parameters.rc_trans_th));
 	parameters.rc_trans_inv = (parameters.rc_trans_th < 0);
 	parameters.rc_trans_th = fabsf(parameters.rc_trans_th);
+	param_get(parameter_handles.rc_dob_th, &(parameters.rc_dob_th));
+	parameters.rc_dob_inv = (parameters.rc_dob_th < 0);
+	parameters.rc_dob_th = fabsf(parameters.rc_dob_th);
 	param_get(parameter_handles.rc_gear_th, &(parameters.rc_gear_th));
 	parameters.rc_gear_inv = (parameters.rc_gear_th < 0);
 	parameters.rc_gear_th = fabsf(parameters.rc_gear_th);

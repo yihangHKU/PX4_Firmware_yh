@@ -88,6 +88,7 @@ struct Parameters {
 	int32_t rc_map_kill_sw;
 	int32_t rc_map_arm_sw;
 	int32_t rc_map_trans_sw;
+	int32_t rc_map_dob_sw;
 	int32_t rc_map_gear_sw;
 	int32_t rc_map_stab_sw;
 	int32_t rc_map_man_sw;
@@ -115,6 +116,7 @@ struct Parameters {
 	float rc_killswitch_th;
 	float rc_armswitch_th;
 	float rc_trans_th;
+	float rc_dob_th;
 	float rc_gear_th;
 	float rc_stab_th;
 	float rc_man_th;
@@ -130,6 +132,7 @@ struct Parameters {
 	bool rc_killswitch_inv;
 	bool rc_armswitch_inv;
 	bool rc_trans_inv;
+	bool rc_dob_inv;
 	bool rc_gear_inv;
 	bool rc_stab_inv;
 	bool rc_man_inv;
@@ -180,6 +183,7 @@ struct ParameterHandles {
 	param_t rc_map_kill_sw;
 	param_t rc_map_arm_sw;
 	param_t rc_map_trans_sw;
+	param_t rc_map_dob_sw;
 	param_t rc_map_gear_sw;
 	param_t rc_map_flaps;
 	param_t rc_map_stab_sw;
@@ -211,6 +215,7 @@ struct ParameterHandles {
 	param_t rc_killswitch_th;
 	param_t rc_armswitch_th;
 	param_t rc_trans_th;
+	param_t rc_dob_th;
 	param_t rc_gear_th;
 	param_t rc_stab_th;
 	param_t rc_man_th;
