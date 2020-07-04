@@ -873,7 +873,7 @@ MulticopterAttitudeControl::control_attitude_rates(float dt)
  	}*/
  	if(_manual_control_sp.dob_switch == manual_control_setpoint_s::SWITCH_POS_ON)
 	{
- 		_D1_middle_element_0 = _att_control(0) + 4.25f * _D1_middle_element_1 - 7.566f * _D1_middle_element_2 + 7.326f * _D1_middle_element_3 - 4.17f * _D1_middle_element_4 + 1.366f * _D1_middle_element_5 - 0.2065f * _D1_middle_element_6;
+ 		_D1_middle_element_0 = _last_actuators.control[0] + 4.25f * _D1_middle_element_1 - 7.566f * _D1_middle_element_2 + 7.326f * _D1_middle_element_3 - 4.17f * _D1_middle_element_4 + 1.366f * _D1_middle_element_5 - 0.2065f * _D1_middle_element_6;
  		_d_estim_1 = -0.03156f * _D1_middle_element_0 + 0.1439f * _D1_middle_element_1 - 0.1448f * _D1_middle_element_2 - 0.3586f * _D1_middle_element_3 + 1.031f * _D1_middle_element_4 - 0.9443f * _D1_middle_element_5 + 0.3034f * _D1_middle_element_6;
  		_D2_middle_element_0 =  rates(0) + 3.462f * _D2_middle_element_1 - 4.518f * _D2_middle_element_2 + 2.629f * _D2_middle_element_3 - 0.5742f * _D2_middle_element_4;
  		_d_estim_2 = 0.1611f * _D2_middle_element_0 - 0.5203f * _D2_middle_element_1 + 0.631f * _D2_middle_element_2 - 0.3439f * _D2_middle_element_3 + 0.07209f * _D2_middle_element_4;
@@ -1054,6 +1054,7 @@ MulticopterAttitudeControl::run()
 	_sensor_bias_sub = orb_subscribe(ORB_ID(sensor_bias));
 	_vehicle_land_detected_sub = orb_subscribe(ORB_ID(vehicle_land_detected));
 	_landing_gear_sub = orb_subscribe(ORB_ID(landing_gear));
+	_actuator_controls_sub= orb_subscribe(ORB_ID(actuator_controls_0));
 
 	/* wakeup source: gyro data from sensor selected by the sensor app */
 	px4_pollfd_struct_t poll_fds = {};
@@ -1105,6 +1106,9 @@ MulticopterAttitudeControl::run()
 
 			/* copy gyro data */
 			orb_copy(ORB_ID(sensor_gyro), _sensor_gyro_sub[_selected_gyro], &_sensor_gyro);
+
+			/*copy last actuaor_controls data*/
+			orb_copy(ORB_ID(actuator_controls_0), _actuator_controls_sub, &_last_actuators);
 
 			/* run the rate controller immediately after a gyro update */
 			if (_v_control_mode.flag_control_rates_enabled) {
@@ -1236,6 +1240,7 @@ MulticopterAttitudeControl::run()
 	orb_unsubscribe(_sensor_bias_sub);
 	orb_unsubscribe(_vehicle_land_detected_sub);
 	orb_unsubscribe(_landing_gear_sub);
+	orb_unsubscribe(_actuator_controls_sub);
 }
 
 int MulticopterAttitudeControl::task_spawn(int argc, char *argv[])

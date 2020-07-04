@@ -161,6 +161,7 @@ private:
 	int		_motor_limits_sub{-1};		/**< motor limits subscription */
 	int		_battery_status_sub{-1};	/**< battery status subscription */
 	int		_sensor_gyro_sub[MAX_GYRO_COUNT];	/**< gyro data subscription */
+	int     _actuator_controls_sub{-1};   /* actuator controls subsciption*/
 	int		_sensor_correction_sub{-1};	/**< sensor thermal correction subscription */
 	int		_sensor_bias_sub{-1};		/**< sensor in-run bias correction subscription */
 	int		_vehicle_land_detected_sub{-1};	/**< vehicle land detected subscription */
@@ -186,6 +187,7 @@ private:
 	struct manual_control_setpoint_s	_manual_control_sp {};	/**< manual control setpoint */
 	struct vehicle_control_mode_s		_v_control_mode {};	/**< vehicle control mode */
 	struct actuator_controls_s		_actuators {};		/**< actuator controls */
+	struct actuator_controls_s 		_last_actuators{};  /*actuator controls*/
 	struct vehicle_status_s			_vehicle_status {};	/**< vehicle status */
 	struct battery_status_s			_battery_status {};	/**< battery status */
 	struct sensor_gyro_s			_sensor_gyro {};	/**< gyro data before thermal correctons and ekf bias estimates are applied */
