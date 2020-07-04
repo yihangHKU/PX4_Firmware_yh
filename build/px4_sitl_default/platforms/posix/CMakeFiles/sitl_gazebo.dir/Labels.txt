@@ -1,0 +1,14 @@
+# Target labels
+ sitl_gazebo
+# Source files and their labels
+/home/yihang/Downloads/Firmware-xw/build/px4_sitl_default/platforms/posix/CMakeFiles/sitl_gazebo
+/home/yihang/Downloads/Firmware-xw/build/px4_sitl_default/platforms/posix/CMakeFiles/sitl_gazebo.rule
+/home/yihang/Downloads/Firmware-xw/build/px4_sitl_default/platforms/posix/CMakeFiles/sitl_gazebo-complete.rule
+/home/yihang/Downloads/Firmware-xw/build/px4_sitl_default/external/Stamp/sitl_gazebo/sitl_gazebo-install.rule
+/home/yihang/Downloads/Firmware-xw/build/px4_sitl_default/external/Stamp/sitl_gazebo/sitl_gazebo-mkdir.rule
+/home/yihang/Downloads/Firmware-xw/build/px4_sitl_default/external/Stamp/sitl_gazebo/sitl_gazebo-download.rule
+/home/yihang/Downloads/Firmware-xw/build/px4_sitl_default/external/Stamp/sitl_gazebo/sitl_gazebo-update.rule
+/home/yihang/Downloads/Firmware-xw/build/px4_sitl_default/external/Stamp/sitl_gazebo/sitl_gazebo-patch.rule
+/home/yihang/Downloads/Firmware-xw/build/px4_sitl_default/external/Stamp/sitl_gazebo/sitl_gazebo-configure.rule
+/home/yihang/Downloads/Firmware-xw/build/px4_sitl_default/external/Stamp/sitl_gazebo/sitl_gazebo-build.rule
+/home/yihang/Downloads/Firmware-xw/build/px4_sitl_default/external/Stamp/sitl_gazebo/sitl_gazebo-forceconfigure.rule

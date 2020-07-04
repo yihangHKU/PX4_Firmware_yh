@@ -1,0 +1,27 @@
+if param compare SYS_MC_EST_GROUP 0
+then
+echo "ERROR [init] Estimator INAV deprecated. Using EKF2"
+param set SYS_MC_EST_GROUP 2
+param save
+fi
+if param compare SYS_MC_EST_GROUP 1
+then
+if attitude_estimator_q start
+then
+local_position_estimator start
+else
+echo "ERROR [init] Estimator LPE not available. Using EKF2"
+param set SYS_MC_EST_GROUP 2
+param save
+fi
+fi
+if param compare SYS_MC_EST_GROUP 2
+then
+ekf2 start
+fi
+vtol_att_control start
+mc_att_control start
+mc_pos_control start
+fw_att_control start
+fw_pos_control_l1 start
+land_detector start vtol

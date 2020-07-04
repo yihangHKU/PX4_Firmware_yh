@@ -1,0 +1,13 @@
+# Target labels
+ px4io_firmware
+# Source files and their labels
+/home/yihang/Downloads/Firmware-xw/build/px4_fmu-v5_default/src/drivers/px4io/CMakeFiles/px4io_firmware
+/home/yihang/Downloads/Firmware-xw/build/px4_fmu-v5_default/src/drivers/px4io/CMakeFiles/px4io_firmware.rule
+/home/yihang/Downloads/Firmware-xw/build/px4_fmu-v5_default/src/drivers/px4io/CMakeFiles/px4io_firmware-complete.rule
+/home/yihang/Downloads/Firmware-xw/build/px4_fmu-v5_default/external/Stamp/px4io_firmware/px4io_firmware-install.rule
+/home/yihang/Downloads/Firmware-xw/build/px4_fmu-v5_default/external/Stamp/px4io_firmware/px4io_firmware-mkdir.rule
+/home/yihang/Downloads/Firmware-xw/build/px4_fmu-v5_default/external/Stamp/px4io_firmware/px4io_firmware-download.rule
+/home/yihang/Downloads/Firmware-xw/build/px4_fmu-v5_default/external/Stamp/px4io_firmware/px4io_firmware-update.rule
+/home/yihang/Downloads/Firmware-xw/build/px4_fmu-v5_default/external/Stamp/px4io_firmware/px4io_firmware-patch.rule
+/home/yihang/Downloads/Firmware-xw/build/px4_fmu-v5_default/external/Stamp/px4io_firmware/px4io_firmware-configure.rule
+/home/yihang/Downloads/Firmware-xw/build/px4_fmu-v5_default/external/Stamp/px4io_firmware/px4io_firmware-build.rule

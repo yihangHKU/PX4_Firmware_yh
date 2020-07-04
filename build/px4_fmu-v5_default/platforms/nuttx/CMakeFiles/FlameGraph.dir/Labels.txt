@@ -1,0 +1,13 @@
+# Target labels
+ FlameGraph
+# Source files and their labels
+/home/yihang/Downloads/Firmware-xw/build/px4_fmu-v5_default/platforms/nuttx/CMakeFiles/FlameGraph
+/home/yihang/Downloads/Firmware-xw/build/px4_fmu-v5_default/platforms/nuttx/CMakeFiles/FlameGraph.rule
+/home/yihang/Downloads/Firmware-xw/build/px4_fmu-v5_default/platforms/nuttx/CMakeFiles/FlameGraph-complete.rule
+/home/yihang/Downloads/Firmware-xw/build/px4_fmu-v5_default/external/Stamp/FlameGraph/FlameGraph-install.rule
+/home/yihang/Downloads/Firmware-xw/build/px4_fmu-v5_default/external/Stamp/FlameGraph/FlameGraph-mkdir.rule
+/home/yihang/Downloads/Firmware-xw/build/px4_fmu-v5_default/external/Stamp/FlameGraph/FlameGraph-download.rule
+/home/yihang/Downloads/Firmware-xw/build/px4_fmu-v5_default/external/Stamp/FlameGraph/FlameGraph-update.rule
+/home/yihang/Downloads/Firmware-xw/build/px4_fmu-v5_default/external/Stamp/FlameGraph/FlameGraph-patch.rule
+/home/yihang/Downloads/Firmware-xw/build/px4_fmu-v5_default/external/Stamp/FlameGraph/FlameGraph-configure.rule
+/home/yihang/Downloads/Firmware-xw/build/px4_fmu-v5_default/external/Stamp/FlameGraph/FlameGraph-build.rule

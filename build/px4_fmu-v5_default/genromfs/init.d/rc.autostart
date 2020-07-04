@@ -1,0 +1,265 @@
+cd /etc/init.d/airframes
+if param compare SYS_AUTOSTART 15001
+then
+sh 15001_coax_heli
+fi
+if param compare SYS_AUTOSTART 24001
+then
+sh 24001_dodeca_cox
+fi
+if param compare SYS_AUTOSTART 16001
+then
+sh 16001_helicopter
+fi
+if param compare SYS_AUTOSTART 7001
+then
+sh 7001_hexa_+
+fi
+if param compare SYS_AUTOSTART 11001
+then
+sh 11001_hexa_cox
+fi
+if param compare SYS_AUTOSTART 6001
+then
+sh 6001_hexa_x
+fi
+if param compare SYS_AUTOSTART 12002
+then
+sh 12002_steadidrone_mavrik
+fi
+if param compare SYS_AUTOSTART 9001
+then
+sh 9001_octo_+
+fi
+if param compare SYS_AUTOSTART 12001
+then
+sh 12001_octo_cox
+fi
+if param compare SYS_AUTOSTART 8001
+then
+sh 8001_octo_x
+fi
+if param compare SYS_AUTOSTART 5001
+then
+sh 5001_quad_+
+fi
+if param compare SYS_AUTOSTART 4040
+then
+sh 4040_reaper
+fi
+if param compare SYS_AUTOSTART 10015
+then
+sh 10015_tbs_discovery
+fi
+if param compare SYS_AUTOSTART 10016
+then
+sh 10016_3dr_iris
+fi
+if param compare SYS_AUTOSTART 10017
+then
+sh 10017_steadidrone_qu4d
+fi
+if param compare SYS_AUTOSTART 10018
+then
+sh 10018_tbs_endurance
+fi
+if param compare SYS_AUTOSTART 4051
+then
+sh 4051_s250aq
+fi
+if param compare SYS_AUTOSTART 4001
+then
+sh 4001_quad_x
+fi
+if param compare SYS_AUTOSTART 4002
+then
+sh 4002_quad_x_mount
+fi
+if param compare SYS_AUTOSTART 4003
+then
+sh 4003_qavr5
+fi
+if param compare SYS_AUTOSTART 4004
+then
+sh 4004_H4_680mm
+fi
+if param compare SYS_AUTOSTART 4009
+then
+sh 4009_qav250
+fi
+if param compare SYS_AUTOSTART 4010
+then
+sh 4010_dji_f330
+fi
+if param compare SYS_AUTOSTART 4011
+then
+sh 4011_dji_f450
+fi
+if param compare SYS_AUTOSTART 4012
+then
+sh 4012_quad_x_can
+fi
+if param compare SYS_AUTOSTART 4014
+then
+sh 4014_s500
+fi
+if param compare SYS_AUTOSTART 4031
+then
+sh 4031_3dr_quad
+fi
+if param compare SYS_AUTOSTART 4050
+then
+sh 4050_generic_250
+fi
+if param compare SYS_AUTOSTART 4060
+then
+sh 4060_dji_matrice_100
+fi
+if param compare SYS_AUTOSTART 4080
+then
+sh 4080_zmr250
+fi
+if param compare SYS_AUTOSTART 1001
+then
+sh 1001_rc_quad_x.hil
+fi
+if param compare SYS_AUTOSTART 4100
+then
+sh 4100_tiltquadrotor
+fi
+if param compare SYS_AUTOSTART 14001
+then
+sh 14001_tri_y_yaw+
+fi
+if param compare SYS_AUTOSTART 14002
+then
+sh 14002_tri_y_yaw-
+fi
+if param compare SYS_AUTOSTART 3000
+then
+sh 3000_generic_wing
+fi
+if param compare SYS_AUTOSTART 3030
+then
+sh 3030_io_camflyer
+fi
+if param compare SYS_AUTOSTART 3031
+then
+sh 3031_phantom
+fi
+if param compare SYS_AUTOSTART 3032
+then
+sh 3032_skywalker_x5
+fi
+if param compare SYS_AUTOSTART 3033
+then
+sh 3033_wingwing
+fi
+if param compare SYS_AUTOSTART 3034
+then
+sh 3034_fx79
+fi
+if param compare SYS_AUTOSTART 3035
+then
+sh 3035_viper
+fi
+if param compare SYS_AUTOSTART 3036
+then
+sh 3036_pigeon
+fi
+if param compare SYS_AUTOSTART 3037
+then
+sh 3037_parrot_disco_mod
+fi
+if param compare SYS_AUTOSTART 3100
+then
+sh 3100_tbs_caipirinha
+fi
+if param compare SYS_AUTOSTART 2106
+then
+sh 2106_albatross
+fi
+if param compare SYS_AUTOSTART 2200
+then
+sh 2200_mini_talon
+fi
+if param compare SYS_AUTOSTART 1000
+then
+sh 1000_rc_fw_easystar.hil
+fi
+if param compare SYS_AUTOSTART 2100
+then
+sh 2100_standard_plane
+fi
+if param compare SYS_AUTOSTART 2105
+then
+sh 2105_maja
+fi
+if param compare SYS_AUTOSTART 50000
+then
+sh 50000_generic_ground_vehicle
+fi
+if param compare SYS_AUTOSTART 50001
+then
+sh 50001_axialracing_ax10
+fi
+if param compare SYS_AUTOSTART 50002
+then
+sh 50002_traxxas_stampede_2wd
+fi
+if param compare SYS_AUTOSTART 1002
+then
+sh 1002_standard_vtol.hil
+fi
+if param compare SYS_AUTOSTART 13000
+then
+sh 13000_generic_vtol_standard
+fi
+if param compare SYS_AUTOSTART 13005
+then
+sh 13005_vtol_AAERT_quad
+fi
+if param compare SYS_AUTOSTART 13006
+then
+sh 13006_vtol_standard_delta
+fi
+if param compare SYS_AUTOSTART 13007
+then
+sh 13007_vtol_AAVVT_quad
+fi
+if param compare SYS_AUTOSTART 13008
+then
+sh 13008_QuadRanger
+fi
+if param compare SYS_AUTOSTART 13009
+then
+sh 13009_vtol_spt_ranger
+fi
+if param compare SYS_AUTOSTART 13013
+then
+sh 13013_deltaquad
+fi
+if param compare SYS_AUTOSTART 13001
+then
+sh 13001_caipirinha_vtol
+fi
+if param compare SYS_AUTOSTART 13003
+then
+sh 13003_quad_tailsitter
+fi
+if param compare SYS_AUTOSTART 13004
+then
+sh 13004_quad+_tailsitter
+fi
+if param compare SYS_AUTOSTART 13002
+then
+sh 13002_firefly6
+fi
+if param compare SYS_AUTOSTART 13010
+then
+sh 13010_claire
+fi
+if param compare SYS_AUTOSTART 13012
+then
+sh 13012_convergence
+fi

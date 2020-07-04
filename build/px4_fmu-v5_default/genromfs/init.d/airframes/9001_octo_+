@@ -1,0 +1,3 @@
+sh /etc/init.d/rc.mc_defaults
+set MIXER octo_+
+set PWM_OUT 12345678

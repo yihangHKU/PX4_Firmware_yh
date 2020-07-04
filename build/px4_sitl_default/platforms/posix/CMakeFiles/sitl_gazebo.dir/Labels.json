@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/yihang/Downloads/Firmware-xw/build/px4_sitl_default/platforms/posix/CMakeFiles/sitl_gazebo"
+		},
+		{
+			"file" : "/home/yihang/Downloads/Firmware-xw/build/px4_sitl_default/platforms/posix/CMakeFiles/sitl_gazebo.rule"
+		},
+		{
+			"file" : "/home/yihang/Downloads/Firmware-xw/build/px4_sitl_default/platforms/posix/CMakeFiles/sitl_gazebo-complete.rule"
+		},
+		{
+			"file" : "/home/yihang/Downloads/Firmware-xw/build/px4_sitl_default/external/Stamp/sitl_gazebo/sitl_gazebo-install.rule"
+		},
+		{
+			"file" : "/home/yihang/Downloads/Firmware-xw/build/px4_sitl_default/external/Stamp/sitl_gazebo/sitl_gazebo-mkdir.rule"
+		},
+		{
+			"file" : "/home/yihang/Downloads/Firmware-xw/build/px4_sitl_default/external/Stamp/sitl_gazebo/sitl_gazebo-download.rule"
+		},
+		{
+			"file" : "/home/yihang/Downloads/Firmware-xw/build/px4_sitl_default/external/Stamp/sitl_gazebo/sitl_gazebo-update.rule"
+		},
+		{
+			"file" : "/home/yihang/Downloads/Firmware-xw/build/px4_sitl_default/external/Stamp/sitl_gazebo/sitl_gazebo-patch.rule"
+		},
+		{
+			"file" : "/home/yihang/Downloads/Firmware-xw/build/px4_sitl_default/external/Stamp/sitl_gazebo/sitl_gazebo-configure.rule"
+		},
+		{
+			"file" : "/home/yihang/Downloads/Firmware-xw/build/px4_sitl_default/external/Stamp/sitl_gazebo/sitl_gazebo-build.rule"
+		},
+		{
+			"file" : "/home/yihang/Downloads/Firmware-xw/build/px4_sitl_default/external/Stamp/sitl_gazebo/sitl_gazebo-forceconfigure.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"sitl_gazebo"
+		],
+		"name" : "sitl_gazebo"
+	}
+}

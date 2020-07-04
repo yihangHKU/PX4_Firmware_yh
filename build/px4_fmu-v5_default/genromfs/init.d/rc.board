@@ -1,0 +1,15 @@
+if [ $AUTOCNF = yes ]
+then
+param set SYS_FMU_TASK 1
+fi
+set LOGGER_BUF 64
+mpu6000 -R 8 -s -T 20602 start
+mpu6000 -R 8 -z -T 20689 start
+bmi055 -A -R 10 start
+bmi055 -G -R 10 start
+hmc5883 -C -T -X start
+ist8310 -C -b 1 start
+ist8310 -C -b 2 start
+ist8310 -C -b 5 start
+pmw3901 start
+px4flow start &

@@ -1,0 +1,13 @@
+1. Mission relevant
+a Mission_result_0.instance_index: waypoint's repeat/jump count
+
+2. Euler Angle:
+a vehicle_attitude_0.q[0]~vehicle_attitude_0.q[3]: select them all, then push the "Add" near "Close", then select the type: "EulerFromQuarternion". Similar for desired attitude: *****.q_d[i]
+
+3. Control output:
+a actuator_controls_0_0.control[i]: for MC(0: Roll  1: Pitch  2: Yaw  3.Thust)
+  actuator_controls_1_0.control[i]: for FW(0: Roll  1: Pitch  2: Yaw  3.Thust)
+b actuator_outputs_0.output[i]: motors and servos
+c vehicle_attitude_0.pitchspeed: pitchspeed (Body frame) feedback (highfrequncy, without d_term filter, after calibration)
+d vehicle_rates_setpoints_0.pitch: pitchspeed (Body frame) setpoint
+e rate_ctrl_status_0.pitchspeed: pitchspeed (Body frame) feedback (lowfrequency, after d_term filter)
